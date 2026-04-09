@@ -1,0 +1,212 @@
+[
+  {
+    "subject": "ELA",
+    "grade": "K",
+    "code": "K.1",
+    "strand": "Communication and Multimodal Literacies",
+    "text": "The student will demonstrate growth in the use of oral language. a) Listen to a variety of literary forms, including stories and poems. b) Participate in a variety of oral language activities including choral and echo speaking."
+  },
+  {
+    "subject": "ELA",
+    "grade": "K",
+    "code": "K.3",
+    "strand": "Reading",
+    "text": "The student will orally identify, segment, and blend various phonemes to develop phonological and phonemic awareness."
+  },
+  {
+    "subject": "ELA",
+    "grade": "K",
+    "code": "K.7",
+    "strand": "Reading",
+    "text": "The student will develop an understanding of basic phonetic principles. a) Identify and name the uppercase and lowercase letters of the alphabet. b) Match consonant and short vowel sounds to appropriate letters."
+  },
+  {
+    "subject": "ELA",
+    "grade": "1",
+    "code": "1.1",
+    "strand": "Communication and Multimodal Literacies",
+    "text": "The student will continue to demonstrate growth in the use of oral language. a) Listen and respond to a variety of media, including books, audiotapes, videos, and other age-appropriate materials."
+  },
+  {
+    "subject": "ELA",
+    "grade": "1",
+    "code": "1.5",
+    "strand": "Reading",
+    "text": "The student will apply knowledge of how print is organized and read. a) Read from left to right and from top to bottom. b) Match spoken words with print."
+  },
+  {
+    "subject": "ELA",
+    "grade": "2",
+    "code": "2.5",
+    "strand": "Reading",
+    "text": "The student will use phonetic strategies when reading and spelling. a) Use knowledge of consonants, consonant blends, and consonant digraphs to decode and spell words."
+  },
+  {
+    "subject": "ELA",
+    "grade": "3",
+    "code": "3.5",
+    "strand": "Reading",
+    "text": "The student will read and demonstrate comprehension of fictional texts, literary nonfiction, and poetry. a) Set a purpose for reading. b) Make connections between previous experiences and reading selections."
+  },
+  {
+    "subject": "ELA",
+    "grade": "4",
+    "code": "4.5",
+    "strand": "Reading",
+    "text": "The student will read and demonstrate comprehension of fictional texts, literary nonfiction, and poetry. a) Explain the author's purpose. b) Describe how the choice of language, setting, characters, and information contributes to the author's purpose."
+  },
+  {
+    "subject": "ELA",
+    "grade": "5",
+    "code": "5.5",
+    "strand": "Reading",
+    "text": "The student will read and demonstrate comprehension of fictional texts, narrative nonfiction, and poetry. a) Describe the relationship between text and previously read materials. b) Describe character development."
+  },
+  {
+    "subject": "ELA",
+    "grade": "6-8",
+    "code": "6.5",
+    "strand": "Reading",
+    "text": "The student will read and demonstrate comprehension of a variety of fictional texts, literary nonfiction, and poetry. a) Identify the elements of narrative structure. b) Make, confirm, and revise predictions."
+  },
+  {
+    "subject": "ELA",
+    "grade": "6-8",
+    "code": "7.5",
+    "strand": "Reading",
+    "text": "The student will read and demonstrate comprehension of a variety of fictional texts, narrative nonfiction, and poetry. a) Describe the elements of narrative structure. b) Compare and contrast various forms and genres of fictional text."
+  },
+  {
+    "subject": "ELA",
+    "grade": "6-8",
+    "code": "8.5",
+    "strand": "Reading",
+    "text": "The student will read and demonstrate comprehension of a variety of fictional texts, narrative nonfiction, poetry, and drama. a) Explain the use of symbols and figurative language. b) Make inferences and draw conclusions."
+  },
+  {
+    "subject": "ELA",
+    "grade": "9-12",
+    "code": "9.3",
+    "strand": "Reading",
+    "text": "The student will apply knowledge of word origins, derivations, and figurative language to extend vocabulary development in authentic texts."
+  },
+  {
+    "subject": "ELA",
+    "grade": "9-12",
+    "code": "10.3",
+    "strand": "Reading",
+    "text": "The student will read, comprehend, and analyze literary texts of different cultures and eras. a) Identify main and supporting ideas. b) Make predictions, draw inferences, and connect prior knowledge to support reading comprehension."
+  },
+  {
+    "subject": "ELA",
+    "grade": "9-12",
+    "code": "11.3",
+    "strand": "Reading",
+    "text": "The student will read and analyze relationships among American literature, history, and culture. a) Describe contributions of different cultures to the development of American literature."
+  },
+  {
+    "subject": "Math",
+    "grade": "K",
+    "code": "K.1",
+    "strand": "Number and Number Sense",
+    "text": "The student will a) tell how many are in a given set of 20 or fewer objects by counting; b) read, write, and represent numbers from 0 through 20."
+  },
+  {
+    "subject": "Math",
+    "grade": "1",
+    "code": "1.1",
+    "strand": "Number and Number Sense",
+    "text": "The student will a) count from 0 to 110 by 1s and from 0 to 110 by various multiples; b) read and write numerals 0 through 110."
+  },
+  {
+    "subject": "Math",
+    "grade": "2",
+    "code": "2.1",
+    "strand": "Number and Number Sense",
+    "text": "The student will a) read, write, and identify the place and value of each digit in a three-digit numeral; b) identify the number that is 10 more, 10 less, 100 more, or 100 less than a given number up to 999."
+  },
+  {
+    "subject": "Math",
+    "grade": "3",
+    "code": "3.2",
+    "strand": "Number and Number Sense",
+    "text": "The student will recognize and use the inverse relationships between addition/subtraction and multiplication/division to complete basic fact sentences."
+  },
+  {
+    "subject": "Math",
+    "grade": "4",
+    "code": "4.4",
+    "strand": "Computation and Estimation",
+    "text": "The student will a) demonstrate fluency with multiplication facts through 12 x 12, and the corresponding division facts; b) estimate and determine sums, differences, and products of whole numbers."
+  },
+  {
+    "subject": "Math",
+    "grade": "5",
+    "code": "5.4",
+    "strand": "Computation and Estimation",
+    "text": "The student will create and solve single-step and multistep practical problems involving addition, subtraction, multiplication, and division of whole numbers."
+  },
+  {
+    "subject": "Math",
+    "grade": "6-8",
+    "code": "6.6",
+    "strand": "Computation and Estimation",
+    "text": "The student will a) add, subtract, multiply, and divide integers; b) solve practical problems involving operations with integers."
+  },
+  {
+    "subject": "Math",
+    "grade": "6-8",
+    "code": "7.1",
+    "strand": "Number and Number Sense",
+    "text": "The student will investigate and describe the concept of negative exponents for powers of ten; compare and order numbers greater than zero written in scientific notation."
+  },
+  {
+    "subject": "Math",
+    "grade": "9-12",
+    "code": "A.1",
+    "strand": "Expressions and Operations",
+    "text": "The student will a) represent verbal quantitative situations algebraically; b) evaluate algebraic expressions for given replacement values of the variables."
+  },
+  {
+    "subject": "Science",
+    "grade": "3",
+    "code": "3.1",
+    "strand": "Scientific and Engineering Practices",
+    "text": "The student will demonstrate an understanding of scientific and engineering practices by a) asking questions and defining problems; b) planning and carrying out investigations."
+  },
+  {
+    "subject": "Science",
+    "grade": "5",
+    "code": "5.5",
+    "strand": "Earth and Space Systems",
+    "text": "The student will investigate and understand that the ocean environment has geological, physical, and biological characteristics."
+  },
+  {
+    "subject": "Science",
+    "grade": "6-8",
+    "code": "LS.2",
+    "strand": "Life Science",
+    "text": "The student will investigate and understand that organisms can be classified based on shared characteristics. Key ideas include organism classification systems."
+  },
+  {
+    "subject": "History",
+    "grade": "3",
+    "code": "VS.1",
+    "strand": "Virginia Studies",
+    "text": "The student will demonstrate skills for historical thinking, geographical analysis, economic decision making, and responsible citizenship by a) analyzing artifacts and primary/secondary sources."
+  },
+  {
+    "subject": "History",
+    "grade": "6-8",
+    "code": "USI.1",
+    "strand": "US History to 1865",
+    "text": "The student will demonstrate skills for historical thinking, geographical analysis, economic decision making, and responsible citizenship."
+  },
+  {
+    "subject": "History",
+    "grade": "9-12",
+    "code": "VUS.1",
+    "strand": "Virginia and US History",
+    "text": "The student will demonstrate skills for historical thinking, geographical analysis, economic decision making, and responsible citizenship by a) analyzing evidence from primary and secondary sources."
+  }
+]

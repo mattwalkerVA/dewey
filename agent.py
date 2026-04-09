@@ -1,4 +1,4 @@
-"""Dewey — AI instructional planning partner for K-12 teachers."""
+"""Dewey - AI instructional planning partner for K-12 teachers."""
 
 import json
 
@@ -8,8 +8,8 @@ import click
 import config
 from memory import Memory
 from onboarding import run_onboarding
-from prompts import SYSTEM_PROMPT, MEMORY_EXTRACTION_PROMPT
-from tools import filesystem, standards, differentiate
+from prompts import MEMORY_EXTRACTION_PROMPT, SYSTEM_PROMPT
+from tools import differentiate, filesystem, standards
 
 # Collect all tool definitions and handlers
 ALL_TOOLS = filesystem.TOOLS + standards.TOOLS + differentiate.TOOLS
@@ -57,6 +57,11 @@ def build_context(memory: Memory, query: str) -> tuple[str, str]:
     return profile_text, memory_text
 
 
+def sanitize_for_storage(text: str) -> tuple[str, bool]:
+    """Apply the FERPA filter before persisting any generated content."""
+    return ferpa_filter(text)
+
+
 def extract_and_store_memories(
     client: anthropic.Anthropic,
     memory: Memory,
@@ -88,12 +93,19 @@ def extract_and_store_memories(
             category = fact.get("category", "context")
             if not content:
                 continue
+            cleaned_content, _ = sanitize_for_storage(content)
+            if not cleaned_content:
+                continue
             collection = (
                 config.PROFILE_COLLECTION
                 if category == "profile"
                 else config.CONVERSATION_COLLECTION
             )
-            memory.store(content=content, collection=collection, category=category)
+            memory.store(
+                content=cleaned_content,
+                collection=collection,
+                category=category,
+            )
     except Exception:
         # Memory extraction is best-effort — don't crash the conversation
         pass
@@ -135,14 +147,14 @@ def main(reset: bool):
         try:
             teacher_input = input("You: ").strip()
         except (EOFError, KeyboardInterrupt):
-            click.echo("\nSee you next period. ✌️")
+            click.echo("\nSee you next period.")
             break
 
         if not teacher_input:
             continue
 
         if teacher_input.lower() in ("quit", "exit", "q"):
-            click.echo("See you next period. ✌️")
+            click.echo("See you next period.")
             break
 
         # /save — write the last response to a markdown file
@@ -152,8 +164,10 @@ def main(reset: bool):
                 continue
             # Optional: title after /save, e.g. "/save Fractions Lesson Grade 4"
             title = teacher_input[5:].strip() or "Untitled Lesson"
-            path = filesystem.save_lesson_plan(title=title, content=last_response)
-            click.echo(click.style(f"  Saved to {path}\n", fg="green"))
+            saved_content, was_sanitized = sanitize_for_storage(last_response)
+            path = filesystem.save_lesson_plan(title=title, content=saved_content)
+            suffix = " (FERPA-sanitized)" if was_sanitized else ""
+            click.echo(click.style(f"  Saved to {path}{suffix}\n", fg="green"))
             continue
 
         # FERPA filter — strip PII before it hits the API
@@ -251,8 +265,9 @@ def main(reset: bool):
         click.echo(f"\n🎓 Dewey: {output}\n")
 
         # Store the exchange in conversation memory
+        stored_assistant_msg, _ = sanitize_for_storage(assistant_msg)
         try:
-            memory.store_exchange(cleaned_input, assistant_msg)
+            memory.store_exchange(cleaned_input, stored_assistant_msg)
         except Exception as exc:
             click.echo(
                 click.style(

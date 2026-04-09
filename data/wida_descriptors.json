@@ -1,0 +1,146 @@
+[
+  {
+    "level": 1,
+    "domain": "Listening",
+    "grade_band": "K-12",
+    "descriptor": "Process recurrent words/phrases, general meaning from visual and graphic support, simple commands/statements with visual support."
+  },
+  {
+    "level": 2,
+    "domain": "Listening",
+    "grade_band": "K-12",
+    "descriptor": "Process key words/phrases in context, main ideas from short oral texts with visual support, multi-step directions with visual support."
+  },
+  {
+    "level": 3,
+    "domain": "Listening",
+    "grade_band": "K-12",
+    "descriptor": "Process main ideas and some details from oral text, multi-step directions, academic vocabulary in context."
+  },
+  {
+    "level": 4,
+    "domain": "Listening",
+    "grade_band": "K-12",
+    "descriptor": "Process main ideas and detailed information from oral text, academic discussions, implied meaning from oral discourse."
+  },
+  {
+    "level": 5,
+    "domain": "Listening",
+    "grade_band": "K-12",
+    "descriptor": "Process grade-level oral text with technical and abstract content, make inferences from oral discourse, interpret speaker's intent."
+  },
+  {
+    "level": 6,
+    "domain": "Listening",
+    "grade_band": "K-12",
+    "descriptor": "Process oral language at a level comparable to English-proficient peers across all content areas."
+  },
+  {
+    "level": 1,
+    "domain": "Speaking",
+    "grade_band": "K-12",
+    "descriptor": "Produce words/phrases, answer WH- questions with single words, name objects/people/pictures, repeat simple sentences."
+  },
+  {
+    "level": 2,
+    "domain": "Speaking",
+    "grade_band": "K-12",
+    "descriptor": "Produce phrases/short sentences, answer questions with phrases, describe objects/people, retell short narratives."
+  },
+  {
+    "level": 3,
+    "domain": "Speaking",
+    "grade_band": "K-12",
+    "descriptor": "Produce related sentences, give brief oral presentations, compare/contrast, express opinions with reasons."
+  },
+  {
+    "level": 4,
+    "domain": "Speaking",
+    "grade_band": "K-12",
+    "descriptor": "Produce connected discourse, explain processes, support ideas with examples, engage in academic discussions."
+  },
+  {
+    "level": 5,
+    "domain": "Speaking",
+    "grade_band": "K-12",
+    "descriptor": "Produce extended discourse, debate and defend positions, use technical vocabulary, adjust register appropriately."
+  },
+  {
+    "level": 6,
+    "domain": "Speaking",
+    "grade_band": "K-12",
+    "descriptor": "Produce oral language comparable to English-proficient peers across content areas."
+  },
+  {
+    "level": 1,
+    "domain": "Reading",
+    "grade_band": "K-12",
+    "descriptor": "Process meaning from environmental print, high-frequency words, phrases with visual/graphic support, patterned text."
+  },
+  {
+    "level": 2,
+    "domain": "Reading",
+    "grade_band": "K-12",
+    "descriptor": "Process main ideas from illustrated text, sequence events, follow written multi-step directions with visual support."
+  },
+  {
+    "level": 3,
+    "domain": "Reading",
+    "grade_band": "K-12",
+    "descriptor": "Process main ideas and some details from grade-level text, make inferences from text with visual support, identify text features."
+  },
+  {
+    "level": 4,
+    "domain": "Reading",
+    "grade_band": "K-12",
+    "descriptor": "Process detailed information from grade-level text, make inferences and predictions, interpret meaning of figurative language."
+  },
+  {
+    "level": 5,
+    "domain": "Reading",
+    "grade_band": "K-12",
+    "descriptor": "Process grade-level text with technical and abstract content, make complex inferences, analyze author's purpose and craft."
+  },
+  {
+    "level": 6,
+    "domain": "Reading",
+    "grade_band": "K-12",
+    "descriptor": "Process text at a level comparable to English-proficient peers across content areas."
+  },
+  {
+    "level": 1,
+    "domain": "Writing",
+    "grade_band": "K-12",
+    "descriptor": "Produce labels, lists, copied words/phrases, high-frequency words related to content, simple patterned sentences."
+  },
+  {
+    "level": 2,
+    "domain": "Writing",
+    "grade_band": "K-12",
+    "descriptor": "Produce phrases and short sentences, complete graphic organizers, respond to questions in writing with phrases."
+  },
+  {
+    "level": 3,
+    "domain": "Writing",
+    "grade_band": "K-12",
+    "descriptor": "Produce related sentences, summaries of content-area material, compare/contrast in writing, simple paragraphs."
+  },
+  {
+    "level": 4,
+    "domain": "Writing",
+    "grade_band": "K-12",
+    "descriptor": "Produce organized paragraphs, content-area reports, essays with main idea and supporting details, edit for conventions."
+  },
+  {
+    "level": 5,
+    "domain": "Writing",
+    "grade_band": "K-12",
+    "descriptor": "Produce extended writing, research-based content, multiple genres, use technical vocabulary precisely."
+  },
+  {
+    "level": 6,
+    "domain": "Writing",
+    "grade_band": "K-12",
+    "descriptor": "Produce writing comparable to English-proficient peers across content areas."
+  }
+]
