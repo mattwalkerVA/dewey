@@ -397,6 +397,47 @@ textarea {
   border-color: var(--accent);
 }
 
+/* --- Manual select-to-redact ----------------------------------------- */
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.redact-selection {
+  min-height: 26px;
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.redact-selection:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+}
+
+.redact-hint {
+  margin: -2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.redact-hint strong {
+  color: var(--accent-dark);
+}
+
 /* --- Plan lesson view ------------------------------------------------- */
 
 .plan-grid {

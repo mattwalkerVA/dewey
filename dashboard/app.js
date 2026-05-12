@@ -22,6 +22,15 @@ function renderMarkdown(markdown) {
   });
 }
 
+function mergeSpans(detected, manual) {
+  const seen = new Map();
+  for (const span of [...detected, ...manual]) {
+    const key = `${span.start}:${span.end}`;
+    if (!seen.has(key)) seen.set(key, span);
+  }
+  return [...seen.values()].sort((a, b) => a.start - b.start);
+}
+
 const COMPANION_LINK_RE = /\[([^\]\n]+)\]\((\/teaching_tools\/[^)]+\.html)\)/g;
 
 function extractCompanionTools(markdown) {
@@ -215,6 +224,86 @@ function PiiAssistToggle({ assist }) {
       <span className=${`pii-badge ${badgeClass}`}>${badge}</span>
       ${assist.error ? html`<span className="pii-error">${assist.error}</span>` : null}
     </div>
+  `;
+}
+
+function RedactableField({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  rows = 3,
+  required,
+  onManualRedact,
+}) {
+  const ref = useRef(null);
+  const [selection, setSelection] = useState(null);
+
+  function handleSelect() {
+    const el = ref.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    if (start == null || end == null || start === end) {
+      setSelection(null);
+      return;
+    }
+    setSelection({ start, end });
+  }
+
+  function handleBlur() {
+    setTimeout(() => setSelection(null), 150);
+  }
+
+  function redact() {
+    if (!selection) return;
+    const text = value.slice(selection.start, selection.end).trim();
+    if (!text) return;
+    const trimmedStart = selection.start + value.slice(selection.start, selection.end).indexOf(text);
+    const trimmedEnd = trimmedStart + text.length;
+    onManualRedact({ start: trimmedStart, end: trimmedEnd, text, score: 1 });
+    setSelection(null);
+    ref.current?.focus();
+  }
+
+  const previewText = selection
+    ? value.slice(selection.start, selection.end).trim().slice(0, 24)
+    : "";
+  const truncated = selection && selection.end - selection.start > 24 ? "…" : "";
+
+  return html`
+    <label htmlFor=${id}>
+      <span className="field-label-row">
+        <span>${label}</span>
+        ${selection
+          ? html`
+              <button
+                type="button"
+                className="redact-selection"
+                onMouseDown=${(event) => event.preventDefault()}
+                onClick=${redact}
+                title="Replace this selection with [REDACTED] before submit"
+              >
+                ✂ Redact "${previewText}${truncated}"
+              </button>
+            `
+          : null}
+      </span>
+      <textarea
+        id=${id}
+        ref=${ref}
+        value=${value}
+        onChange=${(event) => onChange(event.target.value)}
+        onSelect=${handleSelect}
+        onMouseUp=${handleSelect}
+        onKeyUp=${handleSelect}
+        onBlur=${handleBlur}
+        rows=${rows}
+        required=${required}
+        placeholder=${placeholder}
+      ></textarea>
+    </label>
   `;
 }
 
@@ -545,17 +634,50 @@ function LessonStream({ events, markdown, violations, status, onPickDemo, isStre
 function PlanLesson({ setStatus, assist }) {
   const [form, setForm] = useState(DEFAULT_FORM);
   const [accepted, setAccepted] = useState(new Set());
+  const [manualObjectiveSpans, setManualObjectiveSpans] = useState([]);
+  const [manualPromptSpans, setManualPromptSpans] = useState([]);
   const [events, setEvents] = useState([]);
   const [markdown, setMarkdown] = useState("");
   const [violations, setViolations] = useState([]);
   const [streamStatus, setStreamStatus] = useState("idle");
   const [saveTitle, setSaveTitle] = useState("");
 
-  const objectiveSpans = useDetectedPersons(form.objective, assist);
-  const promptSpans = useDetectedPersons(form.prompt, assist);
+  const detectedObjectiveSpans = useDetectedPersons(form.objective, assist);
+  const detectedPromptSpans = useDetectedPersons(form.prompt, assist);
+
+  // Drop manual spans whose anchor text was edited away.
+  useEffect(() => {
+    setManualObjectiveSpans((prev) =>
+      prev.filter((span) => form.objective.slice(span.start, span.end) === span.text),
+    );
+  }, [form.objective]);
+  useEffect(() => {
+    setManualPromptSpans((prev) =>
+      prev.filter((span) => form.prompt.slice(span.start, span.end) === span.text),
+    );
+  }, [form.prompt]);
+
+  const objectiveSpans = useMemo(
+    () => mergeSpans(detectedObjectiveSpans, manualObjectiveSpans),
+    [detectedObjectiveSpans, manualObjectiveSpans],
+  );
+  const promptSpans = useMemo(
+    () => mergeSpans(detectedPromptSpans, manualPromptSpans),
+    [detectedPromptSpans, manualPromptSpans],
+  );
 
   function update(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function addManualSpan(field, span) {
+    const setter = field === "objective" ? setManualObjectiveSpans : setManualPromptSpans;
+    setter((prev) =>
+      prev.some((existing) => existing.start === span.start && existing.end === span.end)
+        ? prev
+        : [...prev, span],
+    );
+    setAccepted((prev) => new Set(prev).add(`${span.start}:${span.end}`));
   }
 
   async function submit(event) {
@@ -635,6 +757,8 @@ function PlanLesson({ setStatus, assist }) {
   function loadDemoForm(preset) {
     setForm(preset);
     setAccepted(new Set());
+    setManualObjectiveSpans([]);
+    setManualPromptSpans([]);
     setMarkdown("");
     setEvents([]);
     setViolations([]);
@@ -662,25 +786,29 @@ function PlanLesson({ setStatus, assist }) {
           value=${form.standard}
           onChange=${(value) => update("standard", value)}
         />
-        <label>
-          Learning objective
-          <textarea
-            value=${form.objective}
-            onChange=${(event) => update("objective", event.target.value)}
-            placeholder="Students will explain how setting shapes mood..."
-            rows=${2}
-            required
-          ></textarea>
-        </label>
-        <label>
-          Teacher prompt / context
-          <textarea
-            value=${form.prompt}
-            onChange=${(event) => update("prompt", event.target.value)}
-            placeholder="Anything Dewey should know: anchor text, time of year, prior lessons, student strengths..."
-            rows=${3}
-          ></textarea>
-        </label>
+        <${RedactableField}
+          id="objective-field"
+          label="Learning objective"
+          value=${form.objective}
+          onChange=${(value) => update("objective", value)}
+          placeholder="Students will explain how setting shapes mood..."
+          rows=${2}
+          required
+          onManualRedact=${(span) => addManualSpan("objective", span)}
+        />
+        <${RedactableField}
+          id="prompt-field"
+          label="Teacher prompt / context"
+          value=${form.prompt}
+          onChange=${(value) => update("prompt", value)}
+          placeholder="Anything Dewey should know: anchor text, time of year, prior lessons, student strengths... Highlight any name to redact it before submit."
+          rows=${3}
+          onManualRedact=${(span) => addManualSpan("prompt", span)}
+        />
+        <p className="redact-hint">
+          Tip: highlight any word in the fields above and a <strong>✂ Redact</strong> button will appear.
+          Combines with auto-detected names from the local PII assist.
+        </p>
         <${PiiReview} spans=${piiSpans} accepted=${accepted} setAccepted=${setAccepted} />
         <div className="form-row">
           <label>

@@ -147,11 +147,14 @@ function mergePersonSpans(text, tokens) {
 /**
  * Apply a set of accepted span keys to a text, replacing accepted spans
  * with `[REDACTED]`. `acceptedKeys` is a Set of `${start}:${end}` strings.
+ * Spans whose text no longer matches at start:end (e.g. user typed since
+ * detection) are dropped silently.
  */
 export function applyRedactions(text, spans, acceptedKeys) {
   if (!spans?.length) return text;
   const accepted = spans
     .filter((span) => acceptedKeys.has(`${span.start}:${span.end}`))
+    .filter((span) => text.slice(span.start, span.end) === span.text)
     .sort((a, b) => b.start - a.start);
   let out = text;
   for (const span of accepted) {
