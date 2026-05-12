@@ -1,210 +1,280 @@
-# Plan: Browser-loaded Dewey — React Lesson Planner
+# Plan v2: Browser-loaded Lesson Planner (anchored on existing Dewey)
 
-## Goal
-Turn Dewey from a Python CLI into a browser app where a teacher enters
-**standard + learning objective + prompt + grade + subject + WIDA range + 45/90 min**
-and gets back a detailed, research-grounded lesson with **exactly three student
-discussion pieces** (Turn-and-Talk is the floor, stronger protocols preferred).
+## What changed since v1
+Three commits landed on `main` that significantly reshape the design:
+- **`teaching_tools/`** — 55 printable HTML cards from mattwalker.education
+  (discussion move cards, structured interactions template, dual-objective
+  planner, dual-lens rubric, exit-ticket differentiator, WIDA × Zwiers
+  matrix, co-teaching suite, etc.).
+- **`dashboard/`** + `dashboard_server.py` — a React SPA (via `htm` + ESM
+  CDN, **no build step**) with views for Library, Profile, Standards, Save
+  Plan, served by stdlib `http.server`.
+- **`data/`** — `va_sols.json` and `wida_descriptors.json`, queried by
+  `tools/standards.py`.
 
-## Architecture (per design decisions)
-- **Backend**: FastAPI wrapper around the existing `agent.py`, `memory.py`,
-  `tools/` modules. Stateless service; Anthropic key stays server-side.
-- **Frontend**: React + Vite + TypeScript + Tailwind.
-- **Memory**: Browser-owned. Teacher profile in `localStorage`; saved lessons
-  + retrieval index in IndexedDB (via `idb-keyval` or Dexie). Profile is sent
-  up with each request so the server stays stateless.
-- **FERPA filter**: keep server-side as defense in depth; surface "PII
-  removed" banner in UI when the filter fires.
+The right move is **not** a parallel Vite+Tailwind app. It's to add a
+**Plan Lesson** view to the existing dashboard and a **POST /api/lesson**
+endpoint to `dashboard_server.py`, and to bake the teaching_tools
+vocabulary into the lesson-generator prompt.
+
+## Design contract
+
+### Input form (new "Plan Lesson" view in `dashboard/app.js`)
+- `standard` — autocomplete against existing `GET /api/standards`
+- `objective` — free text
+- `prompt` — free text (teacher's specific ask / context)
+- `grade` — K–12 dropdown
+- `subject` — ELA · Math · Science · Social Studies · Other
+- `widaLevels` — dual-thumb range, 1–6
+- `klu` — Key Language Use: **Narrate · Inform · Explain · Argue**
+  (from the WIDA × Zwiers 5×4 framework)
+- `timeMinutes` — segmented toggle, **45** or **90** only
+
+### Lesson skeleton (timing sums to budget exactly)
+Anchor on the **three moments** from `structured-interactions-lesson.html`:
+
+| Moment | 45-min | 90-min | Required student discussion |
+|---|---|---|---|
+| **Preparing** | 10 min | 15 min | **Discussion 1** — activate / anticipate |
+| **Interacting** | 25 min | 55 min | **Discussion 2** — deepen / push back |
+| **Extending** | 10 min | 20 min | **Discussion 3** — synthesize / transfer |
+
+Three moments → exactly three discussion pieces. Turn-and-Talk is the floor;
+the generator should choose a richer protocol per moment when content
+supports it (see palette below).
+
+### Discussion-protocol palette (drawn from teaching_tools)
+Each discussion piece must name a protocol. The generator picks from:
+
+- **Discussion Move Cards** (`co-teaching/10-discussion-move-cards.html`):
+  Probe · Paraphrase · Build · Challenge · Clarify — distribute and require
+  ≥2 moves per student.
+- **Turn-and-Talk** (floor) — pair + 60–90s timed exchange + 1 share-out.
+- **Stronger & Clearer Each Time** (Zwiers) — pair → rotate → rewrite.
+- **Jigsaw** (`jigsaw-project-matrix.html`) — expert + home groups; only
+  in 90-min lessons.
+- **Anticipatory Guide** discussion
+  (`anticipatory-guide-expressions.html`) — pre-reading, agree/disagree
+  with formulaic expressions.
+- **Write-Converse-Write** (`write-converse-write-assessment.html`) —
+  quick-write → partner talk → revised quick-write.
+- **Source Triangulation** discussion (`co-teaching/13-...html`) — 3
+  sources, compare evidence.
+- **Visual-First Reading** discussion (`co-teaching/14-...html`) —
+  describe before reading.
+- **Quick-Writes by Level** (`co-teaching/16-...html`) — leveled stem +
+  partner share.
+
+For each piece the model emits:
+- **Protocol name** (from palette)
+- **Prompt** (open, content-anchored, productive)
+- **Sentence stems by WIDA level** — for every level in the requested
+  range, drawn from `data/wida_descriptors.json` where applicable
+- **Move cards in play** — which of Probe/Paraphrase/Build/Challenge/Clarify
+  students must use
+- **Timing** (sums to moment budget)
+- **Teacher move** — what to listen for, when to cold-call
+- **Companion tool** — relative link to a `teaching_tools/*.html` printable
+
+### Objectives + Assessment (dual-lens)
+Use the **Dual-Objective Co-Planning** template's structure
+(`co-teaching/02-dual-objective-planner.html`):
+- **Content objective** (Students will know / do…) + **Standard**
+- **Language objective** (Students will use language to…) + **WIDA KLU**
+- **Evidence (content)** and **Evidence (language)** — separate
+- **Dual-Lens Rubric** (`co-teaching/19-dual-lens-rubric.html`) attached
+- **Exit ticket** generated via **Exit Ticket Differentiator** pattern
+  (`co-teaching/18-...html`) — one stem per WIDA level in range
+
+### Excellent teaching tactics required by the prompt
+- Gradual Release across the three moments (I do / We do / You do)
+- Comprehensible input: visuals, realia, cognates (link
+  `co-teaching/08-cognate-bridge.html` when languages of origin known)
+- Wait time ≥5s; cold-call with thinking time
+- Productive struggle with scaffolds you can fade
+- Formative checkpoint at every moment transition (named, observable)
+- One Zwiers academic-language skill exercised
+  (elaboration · fortification · persuasion · negotiation)
+- No student PII; design at the proficiency-level grain
+
+## Architecture
 
 ```
-web/  ──HTTP/SSE──>  api/  ──>  Anthropic
-  IndexedDB                  reuses tools/, prompts.py, FERPA filter
+dashboard/index.html  ──static──>  user
+dashboard/app.js      (htm + React via ESM CDN, no build)
+        │
+        ├─ POST /api/lesson   (NEW, streamed)
+        ├─ GET  /api/plans    (existing)
+        ├─ POST /api/plans    (existing — saves the generated lesson)
+        ├─ GET  /api/standards (existing)
+        └─ GET  /api/wida     (existing)
+
+dashboard_server.py   (stdlib http.server — extend with /api/lesson)
+        │
+        └─ calls anthropic SDK with LESSON_PLAN_SYSTEM_PROMPT,
+           streams chunks back via chunked transfer encoding
 ```
 
-## Input contract (form schema)
-| Field | Type | Notes |
-|---|---|---|
-| `standard` | string | autosuggest backed by `tools/standards.py` |
-| `objective` | string | learning objective (free text) |
-| `prompt` | string | teacher's specific ask / context |
-| `grade` | enum K–12 | one value |
-| `subject` | string | ELA, Math, Science, Social Studies, etc. |
-| `widaLevels` | [min, max] 1–6 | range slider |
-| `timeMinutes` | 45 \| 90 | toggle, exact two values |
-
-## Output contract (lesson plan schema)
-A structured plan that **must** contain:
-
-- **Content objective** + **Language objective** (SIOP)
-- **Standard(s) addressed**
-- **Materials**
-- **Sequence** with timing that sums to `timeMinutes`:
-  - 45-min skeleton: Hook (5) → Mini-lesson (10) → **Discussion 1** (5–7) →
-    Guided practice (8) → **Discussion 2** (5) → Independent practice (8) →
-    **Discussion 3 / synthesis** (4) → Exit ticket (3)
-  - 90-min skeleton: same shape with one extended protocol (e.g., Socratic
-    Seminar or Jigsaw as Discussion 2 or 3) and a longer independent block.
-- **Differentiation by WIDA level** (sentence frames at each level in range)
-- **Formative assessment checkpoints** (what to look/listen for)
-- **Exit ticket** (3 questions or prompt)
-
-### Each discussion piece must include
-1. **Protocol name** — Turn-and-Talk minimum. Preferred richer protocols:
-   Think–Pair–Share, Stronger & Clearer Each Time (Zwiers), 4 A's Text Protocol,
-   Save the Last Word, Talking Chips, Numbered Heads Together, Jigsaw,
-   Socratic Seminar, Chalk Talk, Concentric Circles.
-2. **Prompt / question** (open, productive, content-anchored).
-3. **Sentence stems** keyed to each WIDA level in the requested range.
-4. **Timing** (and how teacher signals end).
-5. **Teacher move** — what to listen for, when to cold-call, how to redirect.
-6. **Accountable talk move** — how students build on / push back on each other.
-
-## Teaching tactics to bake into the system prompt
-- Gradual Release of Responsibility (I do / We do / You do)
-- Comprehensible input (visuals, realia, gestures, cognates)
-- Productive struggle + scaffolds you can fade
-- Wait time (≥5s) and cold-call with thinking time
-- Show Call / Right is Right / Stretch It (Lemov)
-- Total Physical Response for newcomers
-- Culturally sustaining text/example choice
-- Zwiers' four academic-language skills: elaboration, fortification,
-  persuasion, negotiation — at least one is exercised in the lesson
-- Formative checks every transition; never end a phase without a quick check
+Decision reversal from v1:
+- **No Vite, no Tailwind, no FastAPI.** The existing stack is already
+  browser-loaded React; we extend it.
+- **No IndexedDB.** Saved lessons already persist via `POST /api/plans`
+  → `plans/*.md` on disk. The teacher profile already lives in the
+  SQLite memory store and is exposed via `GET /api/profile`.
+- The FERPA filter in `agent.py` is reused by the new endpoint.
 
 ## Implementation phases
 
-### Phase 0 — Scaffolding
-- Add `web/` (Vite + React + TS + Tailwind).
-- Add `api/` for FastAPI.
-- Update `requirements.txt`: `fastapi`, `uvicorn[standard]`, `sse-starlette`,
-  `pydantic`.
+### Phase 1 — Backend endpoint
+- `dashboard_server.py`: add `POST /api/lesson` handler that:
+  1. Parses JSON body (validate fields, clamp WIDA, enforce time ∈ {45,90}).
+  2. Runs FERPA filter on free-text fields.
+  3. Loads relevant WIDA descriptors for the requested level range + KLU
+     from `tools/standards.search_wida`.
+  4. Loads the standard's full text via `tools/standards.search_standards`
+     if `standard` looks like a SOL code.
+  5. Builds a system prompt from `LESSON_PLAN_SYSTEM_PROMPT` (new in
+     `prompts.py`).
+  6. Calls Anthropic with streaming; writes `text/event-stream` chunks.
+  7. After completion, validates: exactly 3 `### Discussion` sections,
+     timings sum to budget, every WIDA level in range has stems. Retries
+     once with a corrective system message if validation fails.
+- `tests/test_dashboard_server.py`: add cases for validation, FERPA, and
+  the retry path.
 
-### Phase 1 — Backend API
-- `api/main.py`: FastAPI app, CORS for the Vite dev origin.
-- `api/lesson.py`:
-  - `POST /api/lesson` — body matches input contract. Streams SSE chunks.
-  - Validates with Pydantic. Applies FERPA filter to free-text fields.
-  - Calls Anthropic with the new `LESSON_PLAN_SYSTEM_PROMPT` (below).
-  - Uses existing `tools/standards.py` if `standard` is fuzzy.
-- `api/standards.py`: `GET /api/standards?q=…` for the autosuggest input.
-- `prompts.py`: add `LESSON_PLAN_SYSTEM_PROMPT` (see template below).
-- Schema validation on the way out: server parses the JSON header the model
-  emits and rejects/retries if `discussion_pieces.length != 3` or timing
-  doesn't sum to `timeMinutes`.
+### Phase 2 — New "Plan Lesson" view
+- `dashboard/app.js`: add `"plan"` to the `views` array, add a
+  `PlanLesson` component:
+  - The form described above.
+  - SSE consumer that appends streamed markdown to a live `<pre>`.
+  - On completion: a "Save to Library" button that POSTs to `/api/plans`
+    with `{title, grade, subject, content}`.
+  - A "Companion tools" sidebar that links the generated plan's tool
+    references (e.g., "Discussion Move Cards") to their
+    `/teaching_tools/...html` paths (served as static files — add a
+    static handler to `dashboard_server.py`).
+- `dashboard/styles.css`: add styles for the form, the streaming pane,
+  and the discussion-piece card (mirror the teaching_tools aesthetic —
+  DM Sans, navy `#1a1a2e`, accent colors from the move cards).
 
-### Phase 2 — React frontend
-Components:
-- `LessonInputForm` — all seven fields, client-side validation.
-- `StandardPicker` — debounced autosuggest hitting `/api/standards`.
-- `WidaRangeSlider` — dual-thumb 1–6.
-- `TimeToggle` — segmented control, 45 / 90.
-- `LessonPlanView` — renders the streamed plan as it arrives.
-- `DiscussionPieceCard` — protocol name, stems by WIDA level, teacher moves.
-- `SavedLessonsDrawer` — list from IndexedDB; click to reload into the view.
-- `TeacherProfileSheet` — name, grade(s), subject(s), default WIDA range;
-  persisted to `localStorage`, sent up with each request.
-- `PiiBanner` — shown when server returns the FERPA-modified flag.
+### Phase 3 — Static serving of teaching_tools
+- `dashboard_server.py`: route `/teaching_tools/*` to the existing
+  files. They're already self-contained printable HTML.
+- In the streamed lesson, anchor every protocol reference to its tool:
+  `[Discussion Move Cards](/teaching_tools/co-teaching/10-discussion-move-cards.html)`.
 
-State / data:
-- `web/src/lib/db.ts` — IndexedDB wrapper (`saveLesson`, `listLessons`,
-  `searchLessons`).
-- `web/src/lib/api.ts` — fetch + SSE parser.
-
-### Phase 3 — Polish
-- Print stylesheet (`@media print`) — discussion cards collapse cleanly.
-- Copy-as-markdown + download `.md` for each saved lesson.
-- Empty states with examples teachers can click to fill the form.
-- Loading skeleton that mirrors the lesson skeleton so the streamed output
-  feels grounded.
-
-### Phase 4 — Cutover
-- Keep `agent.py` CLI working (it uses the same `prompts.py` / `tools/`).
-- README: split into "CLI" and "Web" sections; document `uvicorn api.main:app`
-  and `npm run dev` from `web/`.
-
-## Draft `LESSON_PLAN_SYSTEM_PROMPT`
+### Phase 4 — Prompt
+Add to `prompts.py`:
 
 ```python
 LESSON_PLAN_SYSTEM_PROMPT = """\
-You are Dewey, designing a single class-period lesson for a K-12 teacher.
+You are Dewey, drafting one class-period lesson for a K-12 teacher who
+serves multilingual learners. Anchor the lesson on the three moments
+from the Structured Interactions framework: PREPARING, INTERACTING,
+EXTENDING. Within each moment include exactly one student discussion
+piece, for a total of THREE discussion pieces in the lesson.
 
 INPUT
 - Standard: {standard}
-- Learning objective: {objective}
-- Teacher's prompt / context: {prompt}
-- Grade: {grade}
-- Subject: {subject}
+- Content objective: {objective}
+- Teacher's prompt: {prompt}
+- Grade: {grade}    Subject: {subject}
 - WIDA proficiency range: {wida_min}-{wida_max}
-- Time budget: EXACTLY {time_minutes} minutes
+- WIDA Key Language Use: {klu}   (Narrate | Inform | Explain | Argue)
+- Time budget: EXACTLY {time_minutes} minutes (45 or 90)
 
 REQUIREMENTS (non-negotiable)
-1. Produce ONE content objective AND ONE language objective (SIOP).
-2. The sequence's segment timings MUST sum to exactly {time_minutes}.
-3. Include EXACTLY THREE student discussion pieces, spread across the lesson:
-   one early (activate / surface thinking), one middle (deepen / push back),
-   one late (synthesize / transfer).
-4. Each discussion piece uses a NAMED protocol. Turn-and-Talk is acceptable
-   as a floor; prefer richer protocols when the time and content support it
-   (Think-Pair-Share, Stronger & Clearer Each Time, 4 A's, Save the Last Word,
-   Talking Chips, Numbered Heads Together, Jigsaw, Socratic Seminar,
-   Chalk Talk, Concentric Circles). Do not repeat the same protocol for all
-   three pieces.
-5. For each discussion piece, provide sentence stems for EACH WIDA level in
-   the requested range (e.g., if range is 2-4, provide stems for 2, 3, and 4).
-6. Apply Gradual Release of Responsibility across the lesson.
-7. Insert a formative check at every transition; name what the teacher
-   should look or listen for.
-8. End with a 3-prompt exit ticket aligned to the objectives.
+1. Write a Content objective AND a Language objective (Dual-Objective).
+2. Segment timings must sum to exactly {time_minutes}, allocated:
+   - 45 min  -> Preparing 10, Interacting 25, Extending 10
+   - 90 min  -> Preparing 15, Interacting 55, Extending 20
+3. EXACTLY THREE discussion pieces, one per moment. Choose protocols
+   from this palette and do not repeat the same protocol three times:
+     Turn-and-Talk (floor)
+     Discussion Move Cards (Probe / Paraphrase / Build / Challenge / Clarify)
+     Stronger & Clearer Each Time
+     Anticipatory Guide discussion
+     Write-Converse-Write
+     Source Triangulation
+     Visual-First Reading
+     Quick-Writes by Level
+     Jigsaw  (90-min only)
+4. For each discussion piece, provide:
+   - Protocol name (and a link to its teaching_tools/*.html companion).
+   - Open, content-anchored prompt.
+   - Sentence stems for EVERY WIDA level in the requested range.
+   - Which Discussion Move Cards students must use.
+   - Timing within the moment.
+   - Teacher move (what to listen for; when to cold-call).
+5. Apply Gradual Release across the moments (model -> guided -> independent).
+6. Insert a formative check at each moment transition; name what to
+   look or listen for.
+7. End with an Exit Ticket Differentiator: one prompt per WIDA level
+   in the range.
+8. Cite the framework only when it clarifies (WIDA, SIOP, Zwiers, QTEL).
 
-OUTPUT FORMAT
-Return Markdown with this exact section order:
+OUTPUT FORMAT (Markdown, exact section order)
 
 # {{Title}}
 ## Objectives
 - Content: ...
-- Language: ...
-## Standard(s)
+- Language: ...  (KLU: {klu})
+## Standard
 ## Materials
-## Sequence
-For each segment, use a level-3 heading like:
-### 1. Hook — Activate prior knowledge (5 min)
-Body: what the teacher does, what students do, formative check.
-For discussion segments, use this sub-structure:
-### 3. Discussion 1 — <Protocol name> (X min)
+## Lesson Arc
+### Preparing ({pre} min)
+Teacher does / Students do / Formative check
+#### Discussion 1 — <Protocol> ({d1} min)
 - Prompt:
-- Stems (WIDA 2):
-- Stems (WIDA 3):
-- Stems (WIDA 4):
+- Stems (WIDA k): ...   (one bullet per level in range)
+- Move cards in play:
 - Teacher move:
-- Accountable-talk move:
+- Companion tool: [name](/teaching_tools/...html)
+### Interacting ({inter} min)
+... (same shape, Discussion 2)
+### Extending ({ext} min)
+... (same shape, Discussion 3)
 ## Differentiation
 - Newcomer (WIDA 1) supports
-- Reaching mastery / extension
+- Extension for emerging mastery
 ## Assessment
-- Formative checkpoints (list)
-- Exit ticket (3 prompts)
+- Formative checkpoints (3, one per moment)
+- Exit ticket (one prompt per WIDA level in range)
+- Companion rubric: [Dual-Lens Rubric](/teaching_tools/co-teaching/19-dual-lens-rubric.html)
 
 STYLE
-- Be specific. Name routines, not generic strategies.
-- Cite the framework when it clarifies (SIOP, WIDA, Zwiers, QTEL).
-- No student PII; design at the proficiency-level grain.
+- Specific named routines, never generic strategies.
+- Design at the proficiency-level grain. No student PII.
 """
 ```
 
-## Acceptance checks (run server-side before returning)
-- Regex / parser confirms three `### \\d+\\. Discussion` segments.
-- All segment minutes sum to `timeMinutes` (±0).
-- Each discussion segment names a protocol and has stems for every level in
-  the requested WIDA range.
-- If any check fails, retry once with a corrective system message before
-  surfacing an error.
+## Acceptance checks (server-side, before returning)
+- Three `#### Discussion \\d+` headings present.
+- Segment minutes parse and sum to `timeMinutes` (±0).
+- Each discussion segment names a protocol from the palette and has
+  stems for every level in `[wida_min, wida_max]`.
+- At least two distinct protocols across the three pieces.
+- Exit ticket has one prompt per WIDA level in range.
+- On failure: retry once with a corrective system message listing the
+  specific violations; if still failing, return the draft with a warning
+  banner so the teacher can edit.
+
+## Files to add or change
+- `prompts.py` — add `LESSON_PLAN_SYSTEM_PROMPT`, plus a small
+  `LESSON_VALIDATION_FEEDBACK_PROMPT` for the retry path.
+- `dashboard_server.py` — add `POST /api/lesson` (streamed) and a
+  static handler for `/teaching_tools/*`.
+- `dashboard/app.js` — add `PlanLesson` view + nav entry.
+- `dashboard/styles.css` — discussion-piece card styles matching the
+  teaching_tools aesthetic (DM Sans, `#1a1a2e`).
+- `tests/test_dashboard_server.py` — validation, FERPA, retry path.
 
 ## Open items
-- **mattwalker.education**: the site returns 403 to programmatic fetches, so
-  I couldn't pull the component vocabulary directly. If there's a specific
-  set of named components / tactics from the site you want enforced, paste
-  the list and I'll fold it into the system prompt + the
-  `DiscussionPieceCard` rendering.
-- Default standards corpus (CCSS? NGSS? state-specific)? Affects what
-  `tools/standards.py` indexes.
-- Auth: single-teacher local install, or shared deploy?
+- KLU input: surface as a dropdown or infer from `objective`? (Recommend
+  explicit dropdown — teachers will want control.)
+- Should saved lessons embed the companion-tool links as part of the
+  saved markdown? (Recommend yes — printable + portable.)
+- Streaming: stdlib `http.server` can do chunked transfer but not true
+  SSE EventSource semantics. The client can still consume the chunked
+  body via `response.body.getReader()`. Acceptable trade for keeping
+  the stack dependency-free.
