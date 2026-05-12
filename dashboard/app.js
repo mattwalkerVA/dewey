@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "https://esm.sh/react@18.3.1";
 import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
 import htm from "https://esm.sh/htm@3.1.1";
+import { Marked } from "https://esm.sh/marked@13.0.3";
+import DOMPurify from "https://esm.sh/dompurify@3.1.6";
 
 import {
   applyRedactions,
@@ -10,6 +12,78 @@ import {
   loadPiiAssist,
   onProgress as onPiiProgress,
 } from "./pii.js";
+
+const markdownRenderer = new Marked({ gfm: true, breaks: false });
+
+function renderMarkdown(markdown) {
+  if (!markdown) return "";
+  return DOMPurify.sanitize(markdownRenderer.parse(markdown), {
+    ADD_ATTR: ["target"],
+  });
+}
+
+const COMPANION_LINK_RE = /\[([^\]\n]+)\]\((\/teaching_tools\/[^)]+\.html)\)/g;
+
+function extractCompanionTools(markdown) {
+  if (!markdown) return [];
+  const seen = new Map();
+  for (const match of markdown.matchAll(COMPANION_LINK_RE)) {
+    const [, name, path] = match;
+    if (!seen.has(path)) seen.set(path, name.trim());
+  }
+  return [...seen.entries()].map(([path, name]) => ({ name, path }));
+}
+
+const DEMO_PROMPTS = [
+  {
+    label: "5th ELA · inference & setting · 45 min",
+    form: {
+      standard: "5.5 — Reading: fictional texts and narrative nonfiction",
+      objective:
+        "Students will infer how the setting in chapter 3 shapes the protagonist's choices, citing two pieces of textual evidence.",
+      prompt:
+        "We're three chapters into our anchor novel. Most of my newcomers need visual scaffolds; the rest of the class is at WIDA 3–4. Focus on text evidence.",
+      grade: "5",
+      subject: "ELA",
+      klu: "Explain",
+      widaMin: 2,
+      widaMax: 4,
+      timeMinutes: 45,
+    },
+  },
+  {
+    label: "8th Science · ecosystems argument · 90 min",
+    form: {
+      standard: "LS.9 — Interactions of living systems",
+      objective:
+        "Students will construct an argument about how a specific human activity has impacted a local ecosystem, supporting the claim with two pieces of evidence and addressing one counterclaim.",
+      prompt:
+        "Co-taught block. Three newcomers (WIDA 1–2), about half the class at WIDA 3–4. Use the Chesapeake Bay as our anchor case study.",
+      grade: "8",
+      subject: "Science",
+      klu: "Argue",
+      widaMin: 1,
+      widaMax: 4,
+      timeMinutes: 90,
+    },
+  },
+  {
+    label: "3rd Math · unit fractions · 45 min",
+    form: {
+      standard: "3.2 — Fractions",
+      objective:
+        "Students will represent unit fractions on a number line and compare two unit fractions with the same denominator using a visual model.",
+      prompt:
+        "Introducing number-line fractions for the first time. About a third of my students are Spanish-dominant at WIDA 2–3 and are strong with visual representations.",
+      grade: "3",
+      subject: "Math",
+      klu: "Inform",
+      widaMin: 2,
+      widaMax: 3,
+      timeMinutes: 45,
+    },
+  },
+];
 
 const html = htm.bind(React.createElement);
 
@@ -381,7 +455,58 @@ function TimeToggle({ value, onChange }) {
   `;
 }
 
-function LessonStream({ events, markdown, violations, status }) {
+function CompanionTools({ tools }) {
+  if (!tools.length) return null;
+  return html`
+    <section className="panel companion-tools">
+      <h3>Companion tools</h3>
+      <p className="companion-blurb">Printable cards from this lesson — open each in a new tab to assign or print.</p>
+      <div className="companion-grid">
+        ${tools.map(
+          (tool) => html`
+            <a
+              key=${tool.path}
+              className="companion-card"
+              href=${tool.path}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="companion-name">${tool.name}</span>
+              <span className="companion-path">${tool.path.replace("/teaching_tools/", "")}</span>
+            </a>
+          `,
+        )}
+      </div>
+    </section>
+  `;
+}
+
+function DemoPrompts({ onPick }) {
+  return html`
+    <div className="demo-prompts">
+      <p>Submit the form to draft a lesson, or load a sample:</p>
+      <div className="demo-prompt-grid">
+        ${DEMO_PROMPTS.map(
+          (preset) => html`
+            <button
+              key=${preset.label}
+              type="button"
+              className="demo-prompt"
+              onClick=${() => onPick(preset.form)}
+            >
+              ${preset.label}
+            </button>
+          `,
+        )}
+      </div>
+    </div>
+  `;
+}
+
+function LessonStream({ events, markdown, violations, status, onPickDemo, isStreaming }) {
+  const renderedHtml = useMemo(() => renderMarkdown(markdown), [markdown]);
+  const showTypingCursor = isStreaming && markdown;
+
   return html`
     <section className="panel lesson-stream">
       <div className="lesson-stream-header">
@@ -402,8 +527,17 @@ function LessonStream({ events, markdown, violations, status }) {
           `
         : null}
       ${markdown
-        ? html`<pre className="lesson-markdown">${markdown}</pre>`
-        : html`<${Empty}>Submit the form to draft a lesson.<//>`}
+        ? html`
+            <article
+              className=${`lesson-rendered ${showTypingCursor ? "streaming" : ""}`}
+              dangerouslySetInnerHTML=${{ __html: renderedHtml }}
+            ></article>
+          `
+        : html`
+            <${Empty}>
+              <${DemoPrompts} onPick=${onPickDemo} />
+            <//>
+          `}
     </section>
   `;
 }
@@ -496,6 +630,17 @@ function PlanLesson({ setStatus, assist }) {
     [objectiveSpans, promptSpans],
   );
 
+  const companionTools = useMemo(() => extractCompanionTools(markdown), [markdown]);
+
+  function loadDemoForm(preset) {
+    setForm(preset);
+    setAccepted(new Set());
+    setMarkdown("");
+    setEvents([]);
+    setViolations([]);
+    setStreamStatus("idle");
+  }
+
   return html`
     <section className="plan-grid">
       <form className="panel form plan-form" onSubmit=${submit}>
@@ -561,6 +706,8 @@ function PlanLesson({ setStatus, assist }) {
           markdown=${markdown}
           violations=${violations}
           status=${streamStatus}
+          onPickDemo=${loadDemoForm}
+          isStreaming=${streamStatus === "streaming"}
         />
         ${markdown
           ? html`
@@ -582,6 +729,7 @@ function PlanLesson({ setStatus, assist }) {
               </section>
             `
           : null}
+        <${CompanionTools} tools=${companionTools} />
       </div>
     </section>
   `;
