@@ -6,18 +6,22 @@ without adding a separate backend framework dependency.
 
 import argparse
 import json
+import mimetypes
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files
 from pathlib import Path
+from typing import Iterator
 from urllib.parse import parse_qs, urlparse
 
 import config
+import lesson
 from memory import Memory
 from tools import filesystem, standards
 
 
 DASHBOARD_DIR = Path(str(files("dashboard")))
+TEACHING_TOOLS_DIR = config.BASE_DIR / "teaching_tools"
 
 
 def json_response(status: int, payload: object) -> tuple[int, str, bytes]:
@@ -137,6 +141,29 @@ def handle_api_request(method: str, raw_path: str, body: bytes = b"") -> tuple[i
     return json_response(HTTPStatus.NOT_FOUND, {"error": "Not found."})
 
 
+def _sse(event_type: str, payload: dict) -> bytes:
+    """Format a single Server-Sent Event frame."""
+    data = json.dumps(payload, ensure_ascii=False)
+    return f"event: {event_type}\ndata: {data}\n\n".encode("utf-8")
+
+
+def stream_lesson(events: Iterator[dict]) -> Iterator[bytes]:
+    """Adapt lesson.generate_lesson_stream events to SSE frames."""
+    for event in events:
+        kind = event["type"]
+        if kind == "chunk":
+            yield _sse("chunk", {"text": event["text"]})
+        elif kind == "notice":
+            yield _sse("notice", {"text": event["text"]})
+        elif kind == "done":
+            yield _sse(
+                "done",
+                {"markdown": event["markdown"], "violations": event["violations"]},
+            )
+        elif kind == "error":
+            yield _sse("error", {"message": event["message"]})
+
+
 class DashboardHandler(SimpleHTTPRequestHandler):
     """Serve the dashboard static files and API."""
 
@@ -151,11 +178,17 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         if self.path.startswith("/api/"):
             self.write_api_response("GET")
             return
+        if self.path.startswith("/teaching_tools/"):
+            self.serve_teaching_tool()
+            return
         if self.path == "/":
             self.path = "/index.html"
         super().do_GET()
 
     def do_POST(self):
+        if urlparse(self.path).path == "/api/lesson":
+            self.stream_lesson_response()
+            return
         self.write_api_response("POST", self.read_body())
 
     def do_DELETE(self):
@@ -172,6 +205,72 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(payload)))
         self.end_headers()
         self.wfile.write(payload)
+
+    def serve_teaching_tool(self) -> None:
+        """Serve a printable HTML card from teaching_tools/ safely."""
+        rel = urlparse(self.path).path.removeprefix("/teaching_tools/")
+        target = (TEACHING_TOOLS_DIR / rel).resolve()
+        try:
+            target.relative_to(TEACHING_TOOLS_DIR.resolve())
+        except ValueError:
+            self.send_error(HTTPStatus.FORBIDDEN, "Path escapes teaching_tools.")
+            return
+        if not target.is_file():
+            self.send_error(HTTPStatus.NOT_FOUND, "Teaching tool not found.")
+            return
+        content_type, _ = mimetypes.guess_type(target.name)
+        body = target.read_bytes()
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", content_type or "application/octet-stream")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def stream_lesson_response(self) -> None:
+        """Validate input and stream a generated lesson plan as SSE."""
+        try:
+            body = self.read_body()
+            payload = read_json_body(body)
+        except (json.JSONDecodeError, ValueError) as exc:
+            self.send_error(HTTPStatus.BAD_REQUEST, str(exc))
+            return
+
+        ferpa_modified = False
+        for field in ("objective", "prompt"):
+            value = str(payload.get(field, "") or "")
+            cleaned, was_modified = lesson.ferpa_filter(value)
+            payload[field] = cleaned
+            ferpa_modified = ferpa_modified or was_modified
+
+        params, errors = lesson.validate_input(payload)
+        if errors:
+            response = json.dumps({"errors": errors}).encode("utf-8")
+            self.send_response(HTTPStatus.BAD_REQUEST)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(response)))
+            self.end_headers()
+            self.wfile.write(response)
+            return
+
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Accel-Buffering", "no")
+        self.end_headers()
+
+        if ferpa_modified:
+            self.wfile.write(
+                _sse("notice", {"text": "Possible student PII was removed before sending."})
+            )
+            self.wfile.flush()
+
+        try:
+            for frame in stream_lesson(lesson.generate_lesson_stream(params)):
+                self.wfile.write(frame)
+                self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError):
+            # Client closed the stream; nothing more to do.
+            return
 
 
 def main() -> None:

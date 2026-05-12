@@ -18,7 +18,7 @@ dewey = "agent:main"
 dewey-dashboard = "dashboard_server:main"
 
 [tool.setuptools]
-py-modules = ["agent", "config", "dashboard_server", "memory", "onboarding", "prompts"]
+py-modules = ["agent", "config", "dashboard_server", "lesson", "memory", "onboarding", "prompts"]
 
 [tool.setuptools.packages.find]
 include = ["dashboard*", "tools*"]
