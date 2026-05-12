@@ -1,15 +1,27 @@
-import React, { useEffect, useMemo, useState } from "https://esm.sh/react@18.3.1";
+import React, { useEffect, useMemo, useRef, useState } from "https://esm.sh/react@18.3.1";
 import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
 import htm from "https://esm.sh/htm@3.1.1";
+
+import {
+  applyRedactions,
+  detectPersons,
+  getBackendLabel,
+  isLoaded as piiIsLoaded,
+  loadPiiAssist,
+  onProgress as onPiiProgress,
+} from "./pii.js";
 
 const html = htm.bind(React.createElement);
 
 const views = [
+  ["plan", "Plan Lesson"],
   ["library", "Lesson Library"],
   ["profile", "Teacher Profile"],
   ["standards", "Standards"],
   ["save", "Save Plan"],
 ];
+
+const PII_STORAGE_KEY = "dewey:piiAssist:enabled";
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
@@ -18,7 +30,7 @@ async function api(path, options = {}) {
   });
   const payload = await response.json();
   if (!response.ok) {
-    throw new Error(payload.error || "Request failed.");
+    throw new Error(payload.error || payload.errors?.join("; ") || "Request failed.");
   }
   return payload;
 }
@@ -26,6 +38,556 @@ async function api(path, options = {}) {
 function Empty({ children }) {
   return html`<div className="empty">${children}</div>`;
 }
+
+// --- PII Assist ---------------------------------------------------------
+
+function usePiiAssist() {
+  const [enabled, setEnabledState] = useState(() => {
+    try {
+      return localStorage.getItem(PII_STORAGE_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const [status, setStatus] = useState(piiIsLoaded() ? "ready" : "idle");
+  const [progress, setProgress] = useState(null);
+  const [backend, setBackend] = useState(getBackendLabel());
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const off = onPiiProgress((event) => {
+      if (event.status === "progress" && typeof event.progress === "number") {
+        setProgress(Math.round(event.progress));
+      }
+      if (event.status === "loading-library") setStatus("loading-library");
+      if (event.status === "loading-model") setStatus("loading-model");
+      if (event.status === "ready") {
+        setStatus("ready");
+        setProgress(null);
+        setBackend(getBackendLabel());
+      }
+      if (event.status === "error") {
+        setStatus("error");
+        setError(event.message || "Failed to load PII assist.");
+      }
+    });
+    return off;
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PII_STORAGE_KEY, enabled ? "1" : "0");
+    } catch {
+      /* localStorage not available */
+    }
+    if (enabled && !piiIsLoaded()) {
+      setStatus("loading-library");
+      setError(null);
+      loadPiiAssist().catch((err) => {
+        console.error(err);
+        setError(String(err));
+      });
+    }
+  }, [enabled]);
+
+  return {
+    enabled,
+    setEnabled: setEnabledState,
+    status,
+    progress,
+    backend,
+    error,
+  };
+}
+
+function PiiAssistToggle({ assist }) {
+  function toggle() {
+    if (!assist.enabled) {
+      const ok = window.confirm(
+        "Download the local PII model (~80 MB)?\n\n" +
+          "It runs entirely in your browser — no text leaves this tab. " +
+          "Cached for next time.",
+      );
+      if (!ok) return;
+    }
+    assist.setEnabled(!assist.enabled);
+  }
+
+  let badge = "Off";
+  let badgeClass = "off";
+  if (assist.enabled) {
+    if (assist.status === "ready") {
+      badge = assist.backend;
+      badgeClass = "ready";
+    } else if (assist.status === "error") {
+      badge = "Failed";
+      badgeClass = "error";
+    } else if (assist.progress != null) {
+      badge = `Loading ${assist.progress}%`;
+      badgeClass = "loading";
+    } else {
+      badge = "Loading…";
+      badgeClass = "loading";
+    }
+  }
+
+  return html`
+    <div className="pii-toggle">
+      <label className="pii-switch">
+        <input type="checkbox" checked=${assist.enabled} onChange=${toggle} />
+        <span className="pii-switch-track" aria-hidden="true"></span>
+        <span className="pii-switch-label">Local PII assist</span>
+      </label>
+      <span className=${`pii-badge ${badgeClass}`}>${badge}</span>
+      ${assist.error ? html`<span className="pii-error">${assist.error}</span>` : null}
+    </div>
+  `;
+}
+
+function useDetectedPersons(value, assist) {
+  const [spans, setSpans] = useState([]);
+  const lastRunRef = useRef(0);
+  const runIdRef = useRef(0);
+
+  useEffect(() => {
+    if (!assist.enabled || assist.status !== "ready") {
+      setSpans([]);
+      return undefined;
+    }
+    if (!value || !value.trim()) {
+      setSpans([]);
+      return undefined;
+    }
+    const id = ++runIdRef.current;
+    const handle = setTimeout(async () => {
+      lastRunRef.current = id;
+      try {
+        const detected = await detectPersons(value);
+        if (id === runIdRef.current) setSpans(detected);
+      } catch (error) {
+        console.error("PII detection failed:", error);
+      }
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [value, assist.enabled, assist.status]);
+
+  return spans;
+}
+
+function PiiReview({ spans, accepted, setAccepted }) {
+  if (!spans.length) return null;
+
+  function toggleKey(key) {
+    setAccepted((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
+  return html`
+    <div className="pii-review">
+      <div className="pii-review-header">
+        <strong>Local PII assist found ${spans.length} name${spans.length === 1 ? "" : "s"}.</strong>
+        <span>Tap each one to redact it before submitting.</span>
+      </div>
+      <div className="pii-chips">
+        ${spans.map((span) => {
+          const key = `${span.start}:${span.end}`;
+          const isAccepted = accepted.has(key);
+          return html`
+            <button
+              type="button"
+              key=${key}
+              className=${`pii-chip ${isAccepted ? "accepted" : ""}`}
+              onClick=${() => toggleKey(key)}
+              title="Click to ${isAccepted ? "keep" : "redact"} this name"
+            >
+              ${isAccepted ? "Redacted: " : ""}${span.text}
+            </button>
+          `;
+        })}
+      </div>
+    </div>
+  `;
+}
+
+// --- Plan Lesson view ---------------------------------------------------
+
+const SUBJECTS = ["ELA", "Math", "Science", "Social Studies", "Other"];
+const GRADES = ["K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+const KLUS = ["Narrate", "Inform", "Explain", "Argue"];
+
+const DEFAULT_FORM = {
+  standard: "",
+  objective: "",
+  prompt: "",
+  grade: "5",
+  subject: "ELA",
+  klu: "Explain",
+  widaMin: 2,
+  widaMax: 4,
+  timeMinutes: 45,
+};
+
+async function* streamLesson(body) {
+  const response = await fetch("/api/lesson", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.errors?.join("; ") || payload.error || `HTTP ${response.status}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    let separator;
+    while ((separator = buffer.indexOf("\n\n")) !== -1) {
+      const frame = buffer.slice(0, separator);
+      buffer = buffer.slice(separator + 2);
+      let eventName = "message";
+      let dataLines = [];
+      for (const line of frame.split("\n")) {
+        if (line.startsWith("event: ")) eventName = line.slice(7).trim();
+        else if (line.startsWith("data: ")) dataLines.push(line.slice(6));
+      }
+      if (!dataLines.length) continue;
+      let data;
+      try {
+        data = JSON.parse(dataLines.join("\n"));
+      } catch {
+        data = dataLines.join("\n");
+      }
+      yield { event: eventName, data };
+    }
+  }
+}
+
+function StandardField({ value, onChange }) {
+  const [results, setResults] = useState([]);
+  const [open, setOpen] = useState(false);
+  const debounceRef = useRef(null);
+
+  function handleChange(next) {
+    onChange(next);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!next.trim()) {
+      setResults([]);
+      return;
+    }
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const payload = await api(`/api/standards?query=${encodeURIComponent(next)}`);
+        setResults(payload.items.slice(0, 5));
+        setOpen(true);
+      } catch (error) {
+        console.error(error);
+      }
+    }, 250);
+  }
+
+  return html`
+    <label className="standard-field">
+      Standard
+      <input
+        value=${value}
+        onChange=${(event) => handleChange(event.target.value)}
+        onFocus=${() => setOpen(true)}
+        onBlur=${() => setTimeout(() => setOpen(false), 150)}
+        placeholder="SOL code or keyword (e.g. 5.4, inference)"
+      />
+      ${open && results.length > 0
+        ? html`
+            <ul className="standard-suggestions">
+              ${results.map(
+                (result) => html`
+                  <li
+                    key=${result.code}
+                    onMouseDown=${() => {
+                      onChange(`${result.code} — ${result.strand}`);
+                      setOpen(false);
+                    }}
+                  >
+                    <strong>${result.code}</strong>
+                    <span>${result.strand}</span>
+                  </li>
+                `,
+              )}
+            </ul>
+          `
+        : null}
+    </label>
+  `;
+}
+
+function WidaRange({ min, max, setMin, setMax }) {
+  function adjust(field, value) {
+    const n = parseInt(value, 10);
+    if (Number.isNaN(n)) return;
+    if (field === "min") setMin(Math.min(n, max));
+    else setMax(Math.max(n, min));
+  }
+
+  return html`
+    <fieldset className="wida-range">
+      <legend>WIDA proficiency range</legend>
+      <label>
+        Min
+        <select value=${min} onChange=${(event) => adjust("min", event.target.value)}>
+          ${[1, 2, 3, 4, 5, 6].map((n) => html`<option key=${n} value=${n}>${n}</option>`)}
+        </select>
+      </label>
+      <label>
+        Max
+        <select value=${max} onChange=${(event) => adjust("max", event.target.value)}>
+          ${[1, 2, 3, 4, 5, 6].map((n) => html`<option key=${n} value=${n}>${n}</option>`)}
+        </select>
+      </label>
+      <span className="wida-range-summary">Stems for levels ${min}–${max}.</span>
+    </fieldset>
+  `;
+}
+
+function TimeToggle({ value, onChange }) {
+  return html`
+    <fieldset className="time-toggle">
+      <legend>Time budget</legend>
+      ${[45, 90].map(
+        (minutes) => html`
+          <label key=${minutes} className=${value === minutes ? "active" : ""}>
+            <input
+              type="radio"
+              name="time"
+              value=${minutes}
+              checked=${value === minutes}
+              onChange=${() => onChange(minutes)}
+            />
+            ${minutes} min
+          </label>
+        `,
+      )}
+    </fieldset>
+  `;
+}
+
+function LessonStream({ events, markdown, violations, status }) {
+  return html`
+    <section className="panel lesson-stream">
+      <div className="lesson-stream-header">
+        <h3>Lesson draft</h3>
+        <span className=${`stream-status ${status}`}>${status}</span>
+      </div>
+      ${events
+        .filter((event) => event.event === "notice")
+        .map((event, index) => html`<div key=${index} className="stream-notice">${event.data.text}</div>`)}
+      ${violations.length > 0
+        ? html`
+            <div className="violations">
+              <strong>Contract violations:</strong>
+              <ul>
+                ${violations.map((v, index) => html`<li key=${index}>${v}</li>`)}
+              </ul>
+            </div>
+          `
+        : null}
+      ${markdown
+        ? html`<pre className="lesson-markdown">${markdown}</pre>`
+        : html`<${Empty}>Submit the form to draft a lesson.<//>`}
+    </section>
+  `;
+}
+
+function PlanLesson({ setStatus, assist }) {
+  const [form, setForm] = useState(DEFAULT_FORM);
+  const [accepted, setAccepted] = useState(new Set());
+  const [events, setEvents] = useState([]);
+  const [markdown, setMarkdown] = useState("");
+  const [violations, setViolations] = useState([]);
+  const [streamStatus, setStreamStatus] = useState("idle");
+  const [saveTitle, setSaveTitle] = useState("");
+
+  const objectiveSpans = useDetectedPersons(form.objective, assist);
+  const promptSpans = useDetectedPersons(form.prompt, assist);
+
+  function update(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function submit(event) {
+    event.preventDefault();
+    setEvents([]);
+    setMarkdown("");
+    setViolations([]);
+    setStreamStatus("streaming");
+
+    const payload = {
+      standard: form.standard,
+      objective: applyRedactions(form.objective, objectiveSpans, accepted),
+      prompt: applyRedactions(form.prompt, promptSpans, accepted),
+      grade: form.grade,
+      subject: form.subject,
+      klu: form.klu,
+      timeMinutes: form.timeMinutes,
+      widaLevels: [form.widaMin, form.widaMax],
+    };
+
+    try {
+      for await (const event of streamLesson(payload)) {
+        setEvents((prev) => [...prev, event]);
+        if (event.event === "chunk") {
+          setMarkdown((prev) => prev + event.data.text);
+        } else if (event.event === "done") {
+          setMarkdown(event.data.markdown);
+          setViolations(event.data.violations || []);
+          setStreamStatus(event.data.violations?.length ? "done-with-warnings" : "done");
+          setStatus(
+            event.data.violations?.length
+              ? `Draft complete with ${event.data.violations.length} contract issue(s).`
+              : "Draft complete.",
+          );
+        } else if (event.event === "error") {
+          setStreamStatus("error");
+          setStatus(`Generation failed: ${event.data.message}`);
+        } else if (event.event === "notice") {
+          setStatus(event.data.text);
+          if (event.data.text?.toLowerCase().includes("retry")) {
+            setMarkdown("");
+          }
+        }
+      }
+    } catch (error) {
+      setStreamStatus("error");
+      setStatus(`Request failed: ${error.message}`);
+    }
+  }
+
+  async function saveToLibrary() {
+    if (!markdown) return;
+    const title = saveTitle.trim() || form.objective.split(/[.\n]/)[0].slice(0, 60) || "Untitled Lesson";
+    try {
+      await api("/api/plans", {
+        method: "POST",
+        body: JSON.stringify({
+          title,
+          grade: form.grade,
+          subject: form.subject,
+          content: markdown,
+        }),
+      });
+      setStatus(`Saved "${title}" to the library.`);
+    } catch (error) {
+      setStatus(`Save failed: ${error.message}`);
+    }
+  }
+
+  const piiSpans = useMemo(
+    () => [...objectiveSpans, ...promptSpans],
+    [objectiveSpans, promptSpans],
+  );
+
+  return html`
+    <section className="plan-grid">
+      <form className="panel form plan-form" onSubmit=${submit}>
+        <h3>Plan a lesson</h3>
+        <${StandardField}
+          value=${form.standard}
+          onChange=${(value) => update("standard", value)}
+        />
+        <label>
+          Learning objective
+          <textarea
+            value=${form.objective}
+            onChange=${(event) => update("objective", event.target.value)}
+            placeholder="Students will explain how setting shapes mood..."
+            rows=${2}
+            required
+          ></textarea>
+        </label>
+        <label>
+          Teacher prompt / context
+          <textarea
+            value=${form.prompt}
+            onChange=${(event) => update("prompt", event.target.value)}
+            placeholder="Anything Dewey should know: anchor text, time of year, prior lessons, student strengths..."
+            rows=${3}
+          ></textarea>
+        </label>
+        <${PiiReview} spans=${piiSpans} accepted=${accepted} setAccepted=${setAccepted} />
+        <div className="form-row">
+          <label>
+            Grade
+            <select value=${form.grade} onChange=${(event) => update("grade", event.target.value)}>
+              ${GRADES.map((grade) => html`<option key=${grade} value=${grade}>${grade}</option>`)}
+            </select>
+          </label>
+          <label>
+            Subject
+            <select value=${form.subject} onChange=${(event) => update("subject", event.target.value)}>
+              ${SUBJECTS.map((subject) => html`<option key=${subject} value=${subject}>${subject}</option>`)}
+            </select>
+          </label>
+          <label>
+            KLU
+            <select value=${form.klu} onChange=${(event) => update("klu", event.target.value)}>
+              ${KLUS.map((klu) => html`<option key=${klu} value=${klu}>${klu}</option>`)}
+            </select>
+          </label>
+        </div>
+        <${WidaRange}
+          min=${form.widaMin}
+          max=${form.widaMax}
+          setMin=${(value) => update("widaMin", value)}
+          setMax=${(value) => update("widaMax", value)}
+        />
+        <${TimeToggle} value=${form.timeMinutes} onChange=${(value) => update("timeMinutes", value)} />
+        <button className="primary" type="submit" disabled=${streamStatus === "streaming"}>
+          ${streamStatus === "streaming" ? "Drafting…" : "Draft lesson"}
+        </button>
+      </form>
+      <div className="plan-output">
+        <${LessonStream}
+          events=${events}
+          markdown=${markdown}
+          violations=${violations}
+          status=${streamStatus}
+        />
+        ${markdown
+          ? html`
+              <section className="panel save-row">
+                <input
+                  className="save-title"
+                  value=${saveTitle}
+                  onChange=${(event) => setSaveTitle(event.target.value)}
+                  placeholder="Lesson title (defaults to first line of objective)"
+                />
+                <button
+                  className="primary"
+                  type="button"
+                  onClick=${saveToLibrary}
+                  disabled=${streamStatus === "streaming"}
+                >
+                  Save to library
+                </button>
+              </section>
+            `
+          : null}
+      </div>
+    </section>
+  `;
+}
+
+// --- Existing views (unchanged behavior) --------------------------------
 
 function LessonLibrary({ setStatus }) {
   const [plans, setPlans] = useState([]);
@@ -267,8 +829,9 @@ function SavePlan({ setStatus }) {
 }
 
 function App() {
-  const [view, setView] = useState("library");
+  const [view, setView] = useState("plan");
   const [status, setStatus] = useState("Dashboard ready.");
+  const assist = usePiiAssist();
 
   const header = useMemo(() => {
     const active = views.find(([id]) => id === view);
@@ -298,8 +861,10 @@ function App() {
             <h2>${header}</h2>
             <p>Local-first controls for plans, profile context, SOLs, and WIDA.</p>
           </div>
+          <${PiiAssistToggle} assist=${assist} />
           <div className="status" role="status">${status}</div>
         </header>
+        ${view === "plan" ? html`<${PlanLesson} setStatus=${setStatus} assist=${assist} />` : null}
         ${view === "library" ? html`<${LessonLibrary} setStatus=${setStatus} />` : null}
         ${view === "profile" ? html`<${Profile} setStatus=${setStatus} />` : null}
         ${view === "standards" ? html`<${Standards} setStatus=${setStatus} />` : null}
