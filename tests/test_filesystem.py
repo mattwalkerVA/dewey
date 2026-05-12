@@ -42,3 +42,38 @@ def test_list_lesson_plans_includes_frontmatter_metadata(tmp_path, monkeypatch):
             "modified": plans[0]["modified"],
         }
     ]
+
+
+def test_read_lesson_plan_strips_frontmatter(tmp_path, monkeypatch):
+    monkeypatch.setattr(filesystem.config, "PLANS_DIR", tmp_path)
+    saved_path = filesystem.save_lesson_plan(
+        "Inference Lesson",
+        "# Inference\n\n## Objectives\n- Content: ...",
+        grade="5",
+        subject="ELA",
+    )
+    filename = saved_path.split("/")[-1]
+
+    plan = filesystem.read_lesson_plan(filename)
+
+    assert plan["title"] == "Inference Lesson"
+    assert plan["grade"] == "5"
+    assert plan["subject"] == "ELA"
+    assert plan["content"].startswith("# Inference")
+    assert "title:" not in plan["content"]
+
+
+def test_read_lesson_plan_rejects_path_traversal(tmp_path, monkeypatch):
+    monkeypatch.setattr(filesystem.config, "PLANS_DIR", tmp_path)
+    import pytest
+
+    with pytest.raises(FileNotFoundError):
+        filesystem.read_lesson_plan("../config.py")
+
+
+def test_read_lesson_plan_missing_file_raises(tmp_path, monkeypatch):
+    monkeypatch.setattr(filesystem.config, "PLANS_DIR", tmp_path)
+    import pytest
+
+    with pytest.raises(FileNotFoundError):
+        filesystem.read_lesson_plan("does-not-exist.md")

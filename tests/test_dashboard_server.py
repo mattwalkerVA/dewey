@@ -73,6 +73,36 @@ def test_dashboard_plan_save_and_list(tmp_path, monkeypatch):
     assert payload["items"][0]["subject"] == "Science"
 
 
+def test_dashboard_get_single_plan(tmp_path, monkeypatch):
+    _, plans_dir = configure_temp_paths(tmp_path, monkeypatch)
+    save_body = json.dumps({
+        "title": "Inference Mini-Lesson",
+        "content": "# Inference\n## Objectives\n- Content: students will infer.",
+        "grade": "5",
+        "subject": "ELA",
+    }).encode("utf-8")
+    decode(dashboard_server.handle_api_request("POST", "/api/plans", save_body))
+
+    plans = decode(dashboard_server.handle_api_request("GET", "/api/plans"))[2]["items"]
+    filename = plans[0]["filename"]
+
+    status, _, payload = decode(
+        dashboard_server.handle_api_request("GET", f"/api/plans/{filename}")
+    )
+    assert status == 200
+    assert payload["title"] == "Inference Mini-Lesson"
+    assert payload["content"].startswith("# Inference")
+
+
+def test_dashboard_get_single_plan_404_for_missing(tmp_path, monkeypatch):
+    configure_temp_paths(tmp_path, monkeypatch)
+    status, _, payload = decode(
+        dashboard_server.handle_api_request("GET", "/api/plans/nope.md")
+    )
+    assert status == 404
+    assert payload == {"error": "Lesson plan not found."}
+
+
 def test_dashboard_plan_save_requires_content(tmp_path, monkeypatch):
     configure_temp_paths(tmp_path, monkeypatch)
     body = json.dumps({"title": "Empty"}).encode("utf-8")

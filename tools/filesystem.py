@@ -66,6 +66,41 @@ def save_lesson_plan(title: str, content: str, grade: str = "", subject: str = "
     return str(filepath)
 
 
+def read_lesson_plan(filename: str) -> dict:
+    """Load a single lesson plan by filename. Returns metadata + body markdown.
+
+    Raises FileNotFoundError if the file does not exist or escapes PLANS_DIR.
+    """
+    target = (config.PLANS_DIR / filename).resolve()
+    try:
+        target.relative_to(config.PLANS_DIR.resolve())
+    except ValueError as exc:
+        raise FileNotFoundError(filename) from exc
+    if not target.is_file():
+        raise FileNotFoundError(filename)
+
+    text = target.read_text(encoding="utf-8")
+    metadata = parse_frontmatter(text)
+
+    body = text
+    if text.startswith("---"):
+        # Strip the frontmatter block so callers get just the lesson markdown.
+        parts = text.split("\n---", 2)
+        if len(parts) >= 2:
+            body = parts[1].lstrip("\n-").lstrip()
+
+    return {
+        "filename": target.name,
+        "path": str(target),
+        "title": metadata.get("title", target.stem),
+        "grade": metadata.get("grade", ""),
+        "subject": metadata.get("subject", ""),
+        "date": metadata.get("date", ""),
+        "modified": datetime.fromtimestamp(target.stat().st_mtime).isoformat(),
+        "content": body,
+    }
+
+
 def list_lesson_plans() -> list[dict]:
     """List all saved lesson plans with metadata."""
     plans = []

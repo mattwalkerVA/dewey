@@ -889,6 +889,9 @@ function PlanLesson({ setStatus, assist }) {
 
 function LessonLibrary({ setStatus }) {
   const [plans, setPlans] = useState([]);
+  const [openFilename, setOpenFilename] = useState(null);
+  const [openPlan, setOpenPlan] = useState(null);
+  const [loadingPlan, setLoadingPlan] = useState(false);
 
   async function loadPlans() {
     const payload = await api("/api/plans");
@@ -896,9 +899,48 @@ function LessonLibrary({ setStatus }) {
     setStatus(`Loaded ${payload.items.length} saved plan${payload.items.length === 1 ? "" : "s"}.`);
   }
 
+  async function openPlanCard(plan) {
+    if (openFilename === plan.filename) {
+      setOpenFilename(null);
+      setOpenPlan(null);
+      return;
+    }
+    setOpenFilename(plan.filename);
+    setOpenPlan(null);
+    setLoadingPlan(true);
+    try {
+      const payload = await api(`/api/plans/${encodeURIComponent(plan.filename)}`);
+      setOpenPlan(payload);
+      setStatus(`Opened "${payload.title}".`);
+    } catch (error) {
+      setStatus(`Could not open plan: ${error.message}`);
+      setOpenFilename(null);
+    } finally {
+      setLoadingPlan(false);
+    }
+  }
+
+  async function copyMarkdown(plan) {
+    try {
+      await navigator.clipboard.writeText(plan.content);
+      setStatus(`Copied "${plan.title}" markdown to clipboard.`);
+    } catch {
+      setStatus("Could not copy to clipboard.");
+    }
+  }
+
   useEffect(() => {
     loadPlans().catch((error) => setStatus(error.message));
   }, []);
+
+  const renderedHtml = useMemo(
+    () => (openPlan ? renderMarkdown(openPlan.content) : ""),
+    [openPlan],
+  );
+  const companionTools = useMemo(
+    () => (openPlan ? extractCompanionTools(openPlan.content) : []),
+    [openPlan],
+  );
 
   return html`
     <section>
@@ -906,19 +948,66 @@ function LessonLibrary({ setStatus }) {
         <button onClick=${loadPlans}>Refresh</button>
       </div>
       ${plans.length === 0
-        ? html`<${Empty}>No saved lesson plans yet.<//>`
+        ? html`<${Empty}>No saved lesson plans yet — draft one in the Plan Lesson view.<//>`
         : html`
             <div className="list">
               ${plans.map(
                 (plan) => html`
-                  <article className="item" key=${plan.path}>
-                    <h4>${plan.title}</h4>
-                    <p>${plan.filename}</p>
-                    <div className="meta">
-                      ${plan.grade ? html`<span className="tag">Grade ${plan.grade}</span>` : null}
-                      ${plan.subject ? html`<span className="tag">${plan.subject}</span>` : null}
-                      <span className="tag">${new Date(plan.modified).toLocaleString()}</span>
-                    </div>
+                  <article
+                    className=${`item plan-row ${openFilename === plan.filename ? "open" : ""}`}
+                    key=${plan.path}
+                  >
+                    <button
+                      type="button"
+                      className="plan-row-summary"
+                      onClick=${() => openPlanCard(plan)}
+                      aria-expanded=${openFilename === plan.filename}
+                    >
+                      <div>
+                        <h4>${plan.title}</h4>
+                        <p>${plan.filename}</p>
+                        <div className="meta">
+                          ${plan.grade ? html`<span className="tag">Grade ${plan.grade}</span>` : null}
+                          ${plan.subject ? html`<span className="tag">${plan.subject}</span>` : null}
+                          <span className="tag">${new Date(plan.modified).toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <span className="chevron" aria-hidden="true">
+                        ${openFilename === plan.filename ? "▾" : "▸"}
+                      </span>
+                    </button>
+                    ${openFilename === plan.filename
+                      ? html`
+                          <div className="plan-row-body">
+                            ${loadingPlan
+                              ? html`<p className="empty">Loading…</p>`
+                              : openPlan
+                                ? html`
+                                    <div className="plan-row-actions">
+                                      <button
+                                        type="button"
+                                        className="secondary"
+                                        onClick=${() => window.print()}
+                                      >
+                                        Print / Save as PDF
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick=${() => copyMarkdown(openPlan)}
+                                      >
+                                        Copy markdown
+                                      </button>
+                                    </div>
+                                    <article
+                                      className="lesson-rendered"
+                                      dangerouslySetInnerHTML=${{ __html: renderedHtml }}
+                                    ></article>
+                                    <${CompanionTools} tools=${companionTools} />
+                                  `
+                                : null}
+                          </div>
+                        `
+                      : null}
                   </article>
                 `,
               )}

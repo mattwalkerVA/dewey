@@ -81,6 +81,14 @@ def handle_api_request(method: str, raw_path: str, body: bytes = b"") -> tuple[i
         if method == "GET" and parsed.path == "/api/plans":
             return json_response(HTTPStatus.OK, {"items": filesystem.list_lesson_plans()})
 
+        if method == "GET" and parsed.path.startswith("/api/plans/"):
+            filename = parsed.path[len("/api/plans/"):]
+            try:
+                plan = filesystem.read_lesson_plan(filename)
+            except FileNotFoundError:
+                return json_response(HTTPStatus.NOT_FOUND, {"error": "Lesson plan not found."})
+            return json_response(HTTPStatus.OK, plan)
+
         if method == "POST" and parsed.path == "/api/plans":
             payload = read_json_body(body)
             title = str(payload.get("title", "")).strip() or "Untitled Lesson"

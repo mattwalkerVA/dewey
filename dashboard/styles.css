@@ -854,6 +854,66 @@ textarea {
   }
 }
 
+/* --- Lesson library expansion ---------------------------------------- */
+
+.plan-row {
+  padding: 0;
+  overflow: hidden;
+}
+
+.plan-row.open {
+  border-color: var(--accent);
+}
+
+.plan-row-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 14px 16px;
+  cursor: pointer;
+  min-height: 0;
+  border-radius: 0;
+}
+
+.plan-row-summary:hover {
+  background: var(--surface-soft);
+}
+
+.plan-row-summary h4 {
+  margin: 0 0 4px;
+}
+
+.plan-row-summary p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.plan-row-summary .chevron {
+  color: var(--muted);
+  font-size: 16px;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+.plan-row-body {
+  border-top: 1px solid var(--line);
+  padding: 16px;
+  background: var(--surface-soft);
+  display: grid;
+  gap: 14px;
+}
+
+.plan-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 /* --- Print layout (matches teaching_tools aesthetic) ----------------- */
 
 @media print {
