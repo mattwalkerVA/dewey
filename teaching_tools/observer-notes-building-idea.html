@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observer Notes &mdash; Building an Idea</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #fff;
+    padding: 30px 20px;
+  }
+
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn {
+    padding: 8px 24px;
+    background: #1a1a2e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .page { max-width: 640px; margin: 0 auto; }
+
+  .title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+  }
+
+  .meta-line {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 18px;
+    justify-content: center;
+  }
+  .meta-field { font-size: 12px; font-weight: 600; color: #555; }
+  .meta-blank {
+    display: inline-block;
+    width: 160px;
+    border-bottom: 1px solid #ccc;
+    margin-left: 6px;
+  }
+  .meta-blank.wide { width: 200px; }
+
+  /* Pyramid container */
+  .pyramid-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 16px;
+  }
+
+  .pyramid {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Triangle outline behind the rows */
+  .pyramid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 310px solid transparent;
+    border-right: 310px solid transparent;
+    border-bottom: 480px solid #333;
+    z-index: 0;
+  }
+  .pyramid::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 308px solid transparent;
+    border-right: 308px solid transparent;
+    border-bottom: 476px solid #fff;
+    z-index: 1;
+  }
+
+  .row {
+    display: flex;
+    gap: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Idea apex */
+  .apex {
+    width: 120px;
+    min-height: 60px;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a2e;
+    background: #fff;
+    margin-top: 40px;
+    margin-bottom: 6px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .prow {
+    display: flex;
+    gap: 0;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 6px;
+  }
+
+  .pbox {
+    border: 2px solid #333;
+    background: #fff;
+    min-height: 72px;
+  }
+
+  /* Row widths — progressively wider */
+  .r1 .pbox { width: 140px; }
+  .r2 .pbox { width: 120px; }
+  .r3 .pbox { width: 108px; }
+  .r4 .pbox { width: 100px; }
+
+  .codes {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 16px;
+  }
+
+  @media print {
+    body { padding: 0.3in; }
+    .screen-only { display: none; }
+  }
+  @page { margin: 0.4in; size: portrait; }
+</style>
+</head>
+<body>
+
+<div class="screen-only">
+  <h1>Visual Organizer &mdash; Building an Idea</h1>
+  <p>Third observer notes &mdash; print or save as PDF</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<div class="page">
+  <div class="title">Visual Organizer for Third Observer Notes (Building an Idea)</div>
+
+  <div class="meta-line">
+    <div class="meta-field">Name: <span class="meta-blank"></span></div>
+    <div class="meta-field">Date: <span class="meta-blank"></span></div>
+    <div class="meta-field">Topic: <span class="meta-blank wide"></span></div>
+  </div>
+
+  <div class="pyramid-wrap">
+    <div class="pyramid">
+      <div class="apex">IDEA</div>
+      <div class="prow r1">
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+      </div>
+      <div class="prow r2">
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+      </div>
+      <div class="prow r3">
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+      </div>
+      <div class="prow r4">
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+        <div class="pbox"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="codes">C = Clarify, S = Support, E = Evaluate, V = Value</div>
+</div>
+
+
+</body>
+</html>

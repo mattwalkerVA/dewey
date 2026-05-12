@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLL Student Profile Card</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #fff; padding: 30px 20px; color: #222; }
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn { padding: 8px 24px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .page { max-width: 720px; margin: 0 auto; }
+  .title { text-align: center; font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+  .sub { text-align: center; font-size: 10px; color: #888; margin-bottom: 16px; font-style: italic; }
+  .card { border: 2px solid #1a1a2e; }
+  .name-row { display: grid; grid-template-columns: 1fr 1fr; }
+  .field { padding: 10px 14px; border-bottom: 1px solid #ccc; font-size: 12px; }
+  .field-label { font-size: 9px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .field-blank { display: inline-block; width: 100%; min-height: 20px; border-bottom: 1px solid #999; }
+  .field.l { border-right: 1px solid #ccc; }
+  .levels { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid #ccc; background: #faf8f4; }
+  .level { padding: 10px 8px; text-align: center; font-size: 10px; border-right: 1px solid #ccc; }
+  .level:last-child { border-right: none; }
+  .level-label { font-size: 9px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .level-circle { display: flex; gap: 4px; justify-content: center; }
+  .lvl { width: 18px; height: 18px; border: 1px solid #999; border-radius: 50%; font-size: 9px; line-height: 16px; text-align: center; font-weight: 700; }
+  .section-row { padding: 12px 14px; border-bottom: 1px solid #ccc; }
+  .section-row.last { border-bottom: none; }
+  .lines { background-image: linear-gradient(to bottom, transparent 19px, #ccc 19px, #ccc 20px, transparent 20px); background-size: 100% 20px; min-height: 60px; padding-top: 4px; }
+  .lines.tall { min-height: 80px; }
+  .checks { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 4px; }
+  .check { font-size: 11px; }
+  .check::before { content: "\2610"; margin-right: 4px; }
+  @media print { body { padding: 0.3in; } .screen-only { display: none; } }
+  @page { margin: 0.4in; size: portrait; }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <h1>MLL Student Profile Card</h1>
+  <p>One-page snapshot &mdash; share with co-teacher and update each quarter</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="page">
+  <div class="title">MLL Student Profile</div>
+  <div class="sub">Confidential &mdash; for co-teacher planning. Update quarterly.</div>
+  <div class="card">
+    <div class="name-row">
+      <div class="field l"><div class="field-label">Student Name</div><span class="field-blank"></span></div>
+      <div class="field"><div class="field-label">Grade / Period</div><span class="field-blank"></span></div>
+    </div>
+    <div class="name-row">
+      <div class="field l"><div class="field-label">Home Language(s)</div><span class="field-blank"></span></div>
+      <div class="field"><div class="field-label">Country of Birth / Years in U.S.</div><span class="field-blank"></span></div>
+    </div>
+    <div class="name-row">
+      <div class="field l"><div class="field-label">Prior Schooling</div><span class="field-blank"></span></div>
+      <div class="field"><div class="field-label">SLIFE? Newcomer?</div><span class="field-blank"></span></div>
+    </div>
+    <div class="levels">
+      <div class="level"><div class="level-label">Listening</div><div class="level-circle"><span class="lvl">1</span><span class="lvl">2</span><span class="lvl">3</span><span class="lvl">4</span><span class="lvl">5</span></div></div>
+      <div class="level"><div class="level-label">Speaking</div><div class="level-circle"><span class="lvl">1</span><span class="lvl">2</span><span class="lvl">3</span><span class="lvl">4</span><span class="lvl">5</span></div></div>
+      <div class="level"><div class="level-label">Reading</div><div class="level-circle"><span class="lvl">1</span><span class="lvl">2</span><span class="lvl">3</span><span class="lvl">4</span><span class="lvl">5</span></div></div>
+      <div class="level"><div class="level-label">Writing</div><div class="level-circle"><span class="lvl">1</span><span class="lvl">2</span><span class="lvl">3</span><span class="lvl">4</span><span class="lvl">5</span></div></div>
+    </div>
+    <div class="section-row"><div class="field-label">Strengths I have seen</div><div class="lines"></div></div>
+    <div class="section-row"><div class="field-label">Language goals this quarter</div><div class="lines"></div></div>
+    <div class="section-row"><div class="field-label">Scaffolds that work</div>
+      <div class="checks">
+        <div class="check">Sentence frames</div>
+        <div class="check">Visual support</div>
+        <div class="check">L1 partner</div>
+        <div class="check">Pre-taught vocab</div>
+        <div class="check">Chunked text</div>
+        <div class="check">Wait time</div>
+        <div class="check">Cognates</div>
+        <div class="check">Modified text</div>
+        <div class="check">Bilingual glossary</div>
+      </div>
+    </div>
+    <div class="section-row last"><div class="field-label">Family contact &middot; preferred mode &middot; interpreter needed?</div><div class="lines"></div></div>
+  </div>
+</div>
+</body>
+</html>

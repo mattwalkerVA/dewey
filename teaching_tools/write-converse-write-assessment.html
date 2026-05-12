@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Write-Converse-Write Assessment Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #fff;
+    padding: 30px 20px;
+  }
+
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn {
+    padding: 8px 24px;
+    background: #1a1a2e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .page { max-width: 680px; margin: 0 auto; }
+
+  .title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+  }
+
+  .meta-line {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 18px;
+    justify-content: center;
+  }
+  .meta-field { font-size: 12px; font-weight: 600; color: #555; }
+  .meta-blank {
+    display: inline-block;
+    width: 160px;
+    border-bottom: 1px solid #ccc;
+    margin-left: 6px;
+  }
+  .meta-blank.wide { width: 200px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #b5652a;
+  }
+
+  thead th {
+    background: #d4793a;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 14px;
+    text-align: center;
+    border: 2px solid #b5652a;
+  }
+
+  td {
+    padding: 14px 14px;
+    border: 2px solid #b5652a;
+    vertical-align: top;
+    background: #fdf0dd;
+  }
+
+  td.section-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #333;
+    text-align: center;
+    vertical-align: middle;
+    text-transform: uppercase;
+    line-height: 1.4;
+    width: 18%;
+  }
+
+  td.feature {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+    width: 42%;
+  }
+  td.feature strong {
+    font-weight: 700;
+  }
+
+  td.rating {
+    width: 40%;
+  }
+
+  @media print {
+    body { padding: 0.3in; }
+    .screen-only { display: none; }
+    td { padding: 10px 10px; }
+  }
+  @page { margin: 0.4in; size: portrait; }
+</style>
+</head>
+<body>
+
+<div class="screen-only">
+  <h1>Write-Converse-Write Assessment Tool</h1>
+  <p>Printable assessment form &mdash; print or save as PDF</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<div class="page">
+  <div class="title">Write-Converse-Write Assessment Tool</div>
+
+  <div class="meta-line">
+    <div class="meta-field">Name: <span class="meta-blank"></span></div>
+    <div class="meta-field">Date: <span class="meta-blank"></span></div>
+    <div class="meta-field">Topic: <span class="meta-blank wide"></span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Features</th>
+        <th>Ratings / Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="section-label" rowspan="6">Prewrite,<br>Conversation,<br>and<br>Postwrite</td>
+        <td class="feature"><strong>Pose one or more relevant and buildable idea(s)</strong></td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="feature"><strong>Support idea(s) with evidence, examples, explanations</strong> (accurate content)</td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="feature"><strong>Clarify idea(s) and terms</strong><br>(if needed)</td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="feature"><strong>Disciplinary thinking</strong><br>(cause-effect, interpret, perspective, bias, analyze . . . )</td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="feature"><strong>Language use</strong><br>(vocabulary, grammar, organization)</td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="feature"><strong>If it&rsquo;s an argument: evaluate and compare ideas to choose strongest/heaviest</strong></td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="section-label" rowspan="3">Conversation</td>
+        <td class="feature"><strong>Build on one another&rsquo;s turns and take appropriate turns</strong></td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="feature"><strong>Value each other&rsquo;s ideas</strong></td>
+        <td class="rating"></td>
+      </tr>
+      <tr>
+        <td class="feature"><strong>Nonverbal communication</strong></td>
+        <td class="rating"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+</body>
+</html>

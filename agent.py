@@ -1,4 +1,4 @@
-"""Dewey — AI instructional planning partner for K-12 teachers."""
+"""Dewey - AI instructional planning partner for K-12 teachers."""
 
 import json
 
@@ -8,8 +8,8 @@ import click
 import config
 from memory import Memory
 from onboarding import run_onboarding
-from prompts import SYSTEM_PROMPT, MEMORY_EXTRACTION_PROMPT
-from tools import filesystem, standards, differentiate
+from prompts import MEMORY_EXTRACTION_PROMPT, SYSTEM_PROMPT
+from tools import differentiate, filesystem, standards
 
 # Collect all tool definitions and handlers
 ALL_TOOLS = filesystem.TOOLS + standards.TOOLS + differentiate.TOOLS
@@ -21,6 +21,18 @@ TOOL_HANDLERS = {
     "search_wida": standards.handle_tool_call,
     "differentiate_lesson": differentiate.handle_tool_call,
 }
+
+
+HELP_TEXT = """\
+Commands:
+  /help              Show this command list.
+  /save [title]      Save Dewey's last response as a lesson plan.
+  /plans             List saved lesson plans.
+  /profile           Show remembered teacher profile notes.
+  /forget profile    Delete remembered teacher profile notes.
+  /forget all        Delete all local memory.
+  quit               Exit Dewey.
+"""
 
 
 def ferpa_filter(text: str) -> tuple[str, bool]:
@@ -57,6 +69,50 @@ def build_context(memory: Memory, query: str) -> tuple[str, str]:
     return profile_text, memory_text
 
 
+def sanitize_for_storage(text: str) -> tuple[str, bool]:
+    """Apply the FERPA filter before persisting any generated content."""
+    return ferpa_filter(text)
+
+
+def format_lesson_plan_list() -> str:
+    """Return a readable list of saved lesson plans."""
+    plans = filesystem.list_lesson_plans()
+    if not plans:
+        return "No saved lesson plans yet."
+    lines = ["Saved lesson plans:"]
+    for plan in plans:
+        details = []
+        if plan.get("grade"):
+            details.append(f"Grade {plan['grade']}")
+        if plan.get("subject"):
+            details.append(plan["subject"])
+        suffix = f" ({', '.join(details)})" if details else ""
+        lines.append(f"- {plan['title']}{suffix}: {plan['path']}")
+    return "\n".join(lines)
+
+
+def format_teacher_profile(memory: Memory) -> str:
+    """Return a readable view of remembered teacher profile notes."""
+    profile_items = memory.get_all(config.PROFILE_COLLECTION)
+    if not profile_items:
+        return "No teacher profile notes saved yet."
+    lines = ["Remembered teacher profile:"]
+    lines.extend(f"- {item['content']}" for item in profile_items)
+    return "\n".join(lines)
+
+
+def handle_memory_delete(memory: Memory, target: str) -> str:
+    """Delete requested memory scope."""
+    normalized = target.strip().lower()
+    if normalized in {"profile", "teacher profile"}:
+        count = memory.delete_collection(config.PROFILE_COLLECTION)
+        return f"Deleted {count} teacher profile note{'s' if count != 1 else ''}."
+    if normalized in {"all", "everything"}:
+        count = memory.delete_all()
+        return f"Deleted {count} memory item{'s' if count != 1 else ''}."
+    return "Use '/forget profile' to clear profile notes or '/forget all' to clear all local memory."
+
+
 def extract_and_store_memories(
     client: anthropic.Anthropic,
     memory: Memory,
@@ -88,12 +144,19 @@ def extract_and_store_memories(
             category = fact.get("category", "context")
             if not content:
                 continue
+            cleaned_content, _ = sanitize_for_storage(content)
+            if not cleaned_content:
+                continue
             collection = (
                 config.PROFILE_COLLECTION
                 if category == "profile"
                 else config.CONVERSATION_COLLECTION
             )
-            memory.store(content=content, collection=collection, category=category)
+            memory.store(
+                content=cleaned_content,
+                collection=collection,
+                category=category,
+            )
     except Exception:
         # Memory extraction is best-effort — don't crash the conversation
         pass
@@ -127,6 +190,7 @@ def main(reset: bool):
         run_onboarding(memory, ferpa_filter)
 
     click.echo("Ready to plan. Type '/save' to save the last response, 'quit' to exit.\n")
+    click.echo("Type '/help' to see available commands.\n")
 
     messages: list[dict] = []
     last_response: str = ""
@@ -135,15 +199,32 @@ def main(reset: bool):
         try:
             teacher_input = input("You: ").strip()
         except (EOFError, KeyboardInterrupt):
-            click.echo("\nSee you next period. ✌️")
+            click.echo("\nSee you next period.")
             break
 
         if not teacher_input:
             continue
 
         if teacher_input.lower() in ("quit", "exit", "q"):
-            click.echo("See you next period. ✌️")
+            click.echo("See you next period.")
             break
+
+        if teacher_input.lower() == "/help":
+            click.echo(HELP_TEXT)
+            continue
+
+        if teacher_input.lower() == "/plans":
+            click.echo(f"\n{format_lesson_plan_list()}\n")
+            continue
+
+        if teacher_input.lower() == "/profile":
+            click.echo(f"\n{format_teacher_profile(memory)}\n")
+            continue
+
+        if teacher_input.lower().startswith("/forget"):
+            target = teacher_input[7:].strip()
+            click.echo(f"\n{handle_memory_delete(memory, target)}\n")
+            continue
 
         # /save — write the last response to a markdown file
         if teacher_input.lower().startswith("/save"):
@@ -152,8 +233,10 @@ def main(reset: bool):
                 continue
             # Optional: title after /save, e.g. "/save Fractions Lesson Grade 4"
             title = teacher_input[5:].strip() or "Untitled Lesson"
-            path = filesystem.save_lesson_plan(title=title, content=last_response)
-            click.echo(click.style(f"  Saved to {path}\n", fg="green"))
+            saved_content, was_sanitized = sanitize_for_storage(last_response)
+            path = filesystem.save_lesson_plan(title=title, content=saved_content)
+            suffix = " (FERPA-sanitized)" if was_sanitized else ""
+            click.echo(click.style(f"  Saved to {path}{suffix}\n", fg="green"))
             continue
 
         # FERPA filter — strip PII before it hits the API
@@ -251,8 +334,9 @@ def main(reset: bool):
         click.echo(f"\n🎓 Dewey: {output}\n")
 
         # Store the exchange in conversation memory
+        stored_assistant_msg, _ = sanitize_for_storage(assistant_msg)
         try:
-            memory.store_exchange(cleaned_input, assistant_msg)
+            memory.store_exchange(cleaned_input, stored_assistant_msg)
         except Exception as exc:
             click.echo(
                 click.style(

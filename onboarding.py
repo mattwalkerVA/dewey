@@ -7,7 +7,7 @@ import anthropic
 
 import config
 from memory import Memory
-from prompts import ONBOARDING_PROMPT, MEMORY_EXTRACTION_PROMPT
+from prompts import MEMORY_EXTRACTION_PROMPT, ONBOARDING_PROMPT
 
 
 def _strip_code_fences(text: str) -> str:
@@ -137,9 +137,10 @@ def run_onboarding(
         f"{'Teacher' if m['role'] == 'user' else 'Dewey'}: {m['content']}"
         for m in messages
     )
+    cleaned_convo, _ = sanitize_text(full_convo)
     try:
         memory.store(
-            content=full_convo,
+            content=cleaned_convo,
             collection=config.CONVERSATION_COLLECTION,
             category="onboarding",
             metadata={"type": "onboarding"},

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dual-Lens Rubric</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #fff; padding: 30px 20px; color: #222; }
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn { padding: 8px 24px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .page { max-width: 760px; margin: 0 auto; }
+  .title { text-align: center; font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 16px; }
+  .meta-line { display: flex; gap: 24px; margin-bottom: 14px; justify-content: center; flex-wrap: wrap; }
+  .meta-field { font-size: 11px; font-weight: 600; color: #555; }
+  .meta-blank { display: inline-block; width: 150px; border-bottom: 1px solid #999; margin-left: 5px; }
+  .lens { border: 2px solid #333; margin-bottom: 14px; }
+  .lens-head { padding: 8px 12px; color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+  .lens-head.content { background: #1a1a2e; }
+  .lens-head.lang { background: #c45d3e; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #faf8f4; padding: 6px 8px; font-size: 9px; font-weight: 800; text-align: center; border-bottom: 1.5px solid #333; border-right: 1px solid #333; text-transform: uppercase; letter-spacing: 0.5px; }
+  th:last-child { border-right: none; }
+  th.crit { text-align: left; width: 22%; padding-left: 12px; }
+  td { padding: 8px 10px; font-size: 10px; line-height: 1.45; vertical-align: top; border-right: 1px solid #aaa; border-bottom: 1px solid #aaa; }
+  td:last-child { border-right: none; }
+  tr:last-child td { border-bottom: none; }
+  td.crit { font-weight: 700; background: #faf8f4; font-size: 11px; }
+  .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .score { border: 2px solid #333; padding: 10px 14px; }
+  .score-label { font-size: 10px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .score-row { font-size: 11px; line-height: 1.6; }
+  .score-blank { display: inline-block; width: 30px; border-bottom: 1.5px solid #333; margin: 0 4px; text-align: center; font-weight: 700; }
+  @media print { body { padding: 0.3in; } .screen-only { display: none; } }
+  @page { margin: 0.35in; size: landscape; }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <h1>Dual-Lens Rubric</h1>
+  <p>Score content correctness and language use separately</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="page">
+  <div class="title">Dual-Lens Rubric</div>
+  <div class="sub">Two lenses keep the grade honest: a strong thinker with developing English shouldn't be marked down for both.</div>
+  <div class="meta-line">
+    <div class="meta-field">Student: <span class="meta-blank"></span></div>
+    <div class="meta-field">Task: <span class="meta-blank"></span></div>
+    <div class="meta-field">Date: <span class="meta-blank"></span></div>
+  </div>
+
+  <div class="lens">
+    <div class="lens-head content">Content Lens</div>
+    <table>
+      <thead><tr><th class="crit">Criterion</th><th>1 &middot; Beginning</th><th>2 &middot; Developing</th><th>3 &middot; Proficient</th><th>4 &middot; Advanced</th></tr></thead>
+      <tbody>
+        <tr><td class="crit">Claim accuracy</td><td>Claim missing or incorrect.</td><td>Claim partial; addresses prompt loosely.</td><td>Claim accurate and on-prompt.</td><td>Claim is precise, original, defensible.</td></tr>
+        <tr><td class="crit">Evidence use</td><td>Little or off-topic evidence.</td><td>Some evidence; not always tied to claim.</td><td>Relevant evidence supports claim.</td><td>Multiple sources triangulated.</td></tr>
+        <tr><td class="crit">Reasoning</td><td>Reasoning unclear.</td><td>Reasoning present but partial.</td><td>Reasoning links evidence to claim.</td><td>Reasoning addresses counterclaim.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="lens">
+    <div class="lens-head lang">Language Lens (WIDA-aligned)</div>
+    <table>
+      <thead><tr><th class="crit">Criterion</th><th>1 &middot; Entering</th><th>2 &middot; Emerging</th><th>3 &middot; Developing</th><th>4&ndash;5 &middot; Expanding+</th></tr></thead>
+      <tbody>
+        <tr><td class="crit">Discourse</td><td>Words / phrases.</td><td>Simple sentences.</td><td>Connected sentences with transitions.</td><td>Cohesive paragraph(s) with hedging.</td></tr>
+        <tr><td class="crit">Sentence</td><td>Memorized chunks.</td><td>Subject + verb structures.</td><td>Compound and complex sentences.</td><td>Varied syntax, embedded clauses.</td></tr>
+        <tr><td class="crit">Word/Phrase</td><td>Everyday vocab + key content nouns.</td><td>Some Tier 2 academic words.</td><td>Tier 2 + Tier 3 used accurately.</td><td>Precise domain vocabulary; nuanced word choice.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="summary">
+    <div class="score">
+      <div class="score-label">Content score</div>
+      <div class="score-row">Claim <span class="score-blank"></span> Evidence <span class="score-blank"></span> Reasoning <span class="score-blank"></span></div>
+      <div class="score-row" style="margin-top: 6px;">Total: <span class="score-blank"></span> / 12</div>
+    </div>
+    <div class="score">
+      <div class="score-label">Language growth note</div>
+      <div class="score-row">Strength: <span style="display: inline-block; width: 60%; border-bottom: 1px solid #999;"></span></div>
+      <div class="score-row" style="margin-top: 6px;">Next try: <span style="display: inline-block; width: 60%; border-bottom: 1px solid #999;"></span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

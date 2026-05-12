@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dewey-teaching-agent"
+version = "0.1.0"
+description = "CLI instructional planning partner for K-12 teachers."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40.0",
+    "click>=8.1.0",
+]
+
+[project.scripts]
+dewey = "agent:main"
+dewey-dashboard = "dashboard_server:main"
+
+[tool.setuptools]
+py-modules = ["agent", "config", "dashboard_server", "memory", "onboarding", "prompts"]
+
+[tool.setuptools.packages.find]
+include = ["dashboard*", "tools*"]
+
+[tool.setuptools.package-data]
+dashboard = ["*.html", "*.css", "*.js"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

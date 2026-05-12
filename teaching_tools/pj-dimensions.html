@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6 Dimensions of Pedagogical Justice — Zwiers 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1612;
+    --warm-white: #faf6f0;
+    --cream: #f2ebe0;
+    --sand: #e6ddd0;
+    --terracotta: #c45d3e;
+    --terracotta-light: #e8886d;
+    --deep-teal: #2a6b6b;
+    --muted-gold: #b8963e;
+    --forest: #3a6b4a;
+    --soft-purple: #8b6fa0;
+    --blue-ink: #3a5a7c;
+    --text: #2c2c2c;
+    --text-light: #5a5a5a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Source Sans 3', Georgia, serif;
+    color: var(--text);
+    background: var(--warm-white);
+    line-height: 1.75;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 60vh;
+    background: linear-gradient(160deg, #1a1612 0%, #2a2018 50%, #1a1612 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background:
+      radial-gradient(ellipse at 25% 35%, rgba(196,93,62,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 65%, rgba(42,107,107,0.1) 0%, transparent 50%);
+    animation: drift 25s ease-in-out infinite;
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(2%, -1%) rotate(0.5deg); }
+    66% { transform: translate(-1%, 1.5%) rotate(-0.3deg); }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.75rem;
+    color: var(--terracotta-light);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    color: #fff;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .hero-subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 560px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.9s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== STICKY NAV ===== */
+  .dim-nav {
+    background: var(--ink);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 0.75rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    gap: 0.15rem;
+    flex-wrap: wrap;
+  }
+
+  .dim-nav a {
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 0.45rem 0.8rem;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .dim-nav a:hover {
+    color: var(--terracotta-light);
+    background: rgba(196,93,62,0.1);
+  }
+
+  /* ===== INTRO ===== */
+  .intro {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 4rem 2rem 2rem;
+  }
+
+  .intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+
+  .intro p {
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .mapping-note {
+    background: var(--cream);
+    border-left: 3px solid var(--muted-gold);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  .mapping-note strong { color: var(--ink); }
+
+  /* ===== DIMENSION SECTIONS ===== */
+  .dimension {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3.5rem 2rem 2rem;
+  }
+
+  .dim-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  .dim-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .dim-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .dim-mapping {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+
+  .dim-stripe {
+    height: 3px;
+    width: 60px;
+    margin-bottom: 2rem;
+    border-radius: 2px;
+  }
+
+  .dim-body p {
+    margin-bottom: 1.25rem;
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  .dim-body p:last-child { margin-bottom: 0; }
+
+  /* ===== EXAMPLES GRID ===== */
+  .examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+  }
+
+  .example-col {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    border: 1px solid var(--sand);
+  }
+
+  .example-col h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .example-col ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .example-col li {
+    padding: 0.5rem 0;
+    padding-left: 1.2rem;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .example-col li:last-child { border-bottom: none; }
+
+  .example-col li::before {
+    content: '\2192';
+    position: absolute;
+    left: 0;
+    font-size: 0.85rem;
+  }
+
+  /* ===== PULL QUOTE ===== */
+  .pull-quote {
+    border-left: 3px solid var(--muted-gold);
+    padding: 1.25rem 0 1.25rem 1.75rem;
+    margin: 2rem 0 1rem;
+  }
+
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.5;
+    margin-bottom: 0 !important;
+  }
+
+  .pull-quote cite {
+    font-family: 'Source Sans 3', sans-serif;
+    font-style: normal;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+    display: block;
+  }
+
+  /* ===== SECTION DIVIDER ===== */
+  .section-divider {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section-divider hr {
+    border: none;
+    border-top: 1px solid var(--sand);
+  }
+
+  /* ===== CLOSING ===== */
+  .closing {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 4rem;
+  }
+
+  .closing h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+
+  .closing p {
+    margin-bottom: 1.25rem;
+    color: var(--text);
+  }
+
+  .closing-tip {
+    background: linear-gradient(135deg, var(--ink) 0%, #2a2018 100%);
+    border-radius: 10px;
+    padding: 2rem 2.25rem;
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .closing-tip p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--terracotta-light);
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  /* ===== FADE-IN ===== */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 700px) {
+    .examples-grid {
+      grid-template-columns: 1fr;
+    }
+    .dim-nav a {
+      font-size: 0.68rem;
+      padding: 0.35rem 0.55rem;
+    }
+    .dimension { padding: 2.5rem 1.5rem 1.5rem; }
+    .intro { padding: 3rem 1.5rem 1.5rem; }
+    .closing { padding: 2.5rem 1.5rem 3rem; }
+    .dim-header { gap: 0.5rem; }
+    .dim-number { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Zwiers 2024 &middot; Pedagogical Justice</div>
+    <h1>The 6 Dimensions of<br>Pedagogical Justice</h1>
+    <p class="hero-subtitle">What just teaching looks like in practice.</p>
+  </div>
+</section>
+
+<!-- ===== STICKY NAV ===== -->
+<nav class="dim-nav">
+  <a href="#dim1">Agency &amp; Voice</a>
+  <a href="#dim2">Engaging Challenges</a>
+  <a href="#dim3">Meaningful Interactions</a>
+  <a href="#dim4">Idea-Building</a>
+  <a href="#dim5">Assessment for Learning</a>
+  <a href="#dim6">Critical &amp; Creative Thinking</a>
+</nav>
+
+<!-- ===== INTRO ===== -->
+<section class="intro fade-in">
+  <h2>What Students Experience When Teaching Is Just</h2>
+  <p>In <em>Overhauling Learning for Multilingual Students</em> (2024), Jeff Zwiers argues that the most important question in education isn&rsquo;t &ldquo;What are we teaching?&rdquo; but &ldquo;What are students <strong>experiencing</strong>?&rdquo; Pedagogical Justice is his answer to what that experience should look and feel like.</p>
+  <p>The 6 dimensions below are not a checklist. They are the qualities students should encounter in every lesson, every interaction, every assessment. When all six are present, students aren&rsquo;t just learning content&mdash;they&rsquo;re developing as thinkers, communicators, and meaning-makers. When any dimension is absent, something essential is missing from the educational experience.</p>
+  <p>For multilingual learners in particular, these dimensions address the systemic inequities that accumulation-based schooling perpetuates: the watered-down tasks, the silenced voices, the grammar-focused assessments that never ask students to <em>think</em>.</p>
+
+  <div class="mapping-note">
+    <strong>Framework connection:</strong> The first four dimensions map directly to the Meaning-Making framework. Agency &amp; Voice connects to the <em>purpose</em>, Engaging Challenges to <em>scaffolding</em>, Meaningful Interactions to <em>interaction</em>, and Idea-Building to the combined force of purpose and engine. Dimensions 5 and 6&mdash;Assessment for Learning and Critical &amp; Creative Thinking&mdash;extend the framework into territory that strengthens every other component.
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- ===== DIMENSION 1: AGENCY & VOICE ===== -->
+<section class="dimension fade-in" id="dim1">
+  <div class="dim-header">
+    <span class="dim-number" style="color:var(--terracotta)">1</span>
+    <span class="dim-title">Agency &amp; Voice</span>
+  </div>
+  <div class="dim-mapping" style="background:rgba(196,93,62,0.1);color:var(--terracotta)">(The Purpose &mdash; Meaning-Making)</div>
+  <div class="dim-stripe" style="background:var(--terracotta)"></div>
+
+  <div class="dim-body">
+    <p>Accumulation-based learning systematically suppresses student agency. Students answer what the teacher asks, in the format the teacher prescribes, for the points the teacher assigns. The student&rsquo;s role is to <em>receive</em>&mdash;receive information, receive instructions, receive grades. Their voice is irrelevant to the transaction.</p>
+
+    <p>Pedagogical Justice demands the opposite. Agency means students have genuine ownership of their learning&mdash;not the performative &ldquo;student choice&rdquo; of picking between three pre-approved topics, but real decision-making about what matters, how to investigate, and how to demonstrate understanding. Voice means students&rsquo; perspectives, languages, and ideas are not just tolerated but treated as <strong>essential contributions</strong> to the collective knowledge of the classroom.</p>
+
+    <p>When meaning-making is the purpose of all classroom activity, student agency isn&rsquo;t an add-on or a reward for compliance&mdash;it&rsquo;s a prerequisite. You cannot make meaning <em>for</em> someone. Meaning-making is inherently an act of agency: choosing what matters, connecting it to what you know, expressing it in your own terms. A classroom that suppresses agency is a classroom that has abandoned its core purpose.</p>
+
+    <p>For multilingual learners, agency and voice carry additional weight. Too often, English language proficiency is treated as a prerequisite for having something worth saying. Students with developing English are positioned as &ldquo;not ready&rdquo; for substantive participation. Zwiers argues this is one of the deepest forms of pedagogical injustice: silencing students who have the most to contribute because they contribute in the &ldquo;wrong&rdquo; language.</p>
+  </div>
+
+  <div class="examples-grid">
+    <div class="example-col" style="border-top:3px solid var(--terracotta)">
+      <h4 style="color:var(--terracotta)">History Classroom</h4>
+      <ul>
+        <li><strong>Student-directed inquiry:</strong> After studying the causes of the Great Depression, students choose which cause they believe was most significant and defend their position with evidence&mdash;there is no &ldquo;right answer&rdquo; the teacher is fishing for</li>
+        <li><strong>Co-created discussion norms:</strong> Students establish their own rules for Socratic seminars rather than following a teacher-imposed protocol. They revisit and revise these norms as the community evolves</li>
+        <li><strong>Position-taking on controversies:</strong> Was dropping the atomic bomb justified? Students must take and defend a position, understanding that their voice and reasoning matter more than arriving at the &ldquo;correct&rdquo; conclusion</li>
+        <li><strong>Student-led warm-ups:</strong> Students take turns selecting and presenting primary sources for the class to analyze, choosing documents that connect to themes <em>they</em> find compelling</li>
+      </ul>
+    </div>
+    <div class="example-col" style="border-top:3px solid var(--terracotta)">
+      <h4 style="color:var(--terracotta)">ESOL Classroom</h4>
+      <ul>
+        <li><strong>Topic ownership:</strong> Language projects draw from students&rsquo; own experiences&mdash;family migration stories, cultural traditions, community issues&mdash;rather than generic textbook prompts</li>
+        <li><strong>Language choice in drafting:</strong> Students select which language(s) to draft in, treating translanguaging as a legitimate composing strategy rather than a deficiency to correct</li>
+        <li><strong>Community-building conversations:</strong> Students lead morning check-ins and community circles, developing leadership and voice in low-stakes settings before high-stakes academic tasks</li>
+        <li><strong>Personal dictionaries:</strong> Students create their own vocabulary resources blending L1 and L2, organized by concepts <em>they</em> find important&mdash;not teacher-selected word lists</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>&ldquo;Accumulation-based learning suppresses agency&mdash;students just answer what the teacher asks for points.&rdquo;</p>
+    <cite>&mdash; Jeff Zwiers, <em>Overhauling Learning for Multilingual Students</em>, 2024</cite>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- ===== DIMENSION 2: ENGAGING CHALLENGES ===== -->
+<section class="dimension fade-in" id="dim2">
+  <div class="dim-header">
+    <span class="dim-number" style="color:var(--deep-teal)">2</span>
+    <span class="dim-title">Engaging Challenges</span>
+  </div>
+  <div class="dim-mapping" style="background:rgba(42,107,107,0.1);color:var(--deep-teal)">(The Medium &mdash; Scaffolding)</div>
+  <div class="dim-stripe" style="background:var(--deep-teal)"></div>
+
+  <div class="dim-body">
+    <p>Multilingual learners are disproportionately given the least engaging work in schools. While their &ldquo;advanced&rdquo; peers analyze, debate, and create, MLs are handed vocabulary matching worksheets, fill-in-the-blank grammar exercises, and simplified texts stripped of everything that made the original worth reading. The logic seems compassionate&mdash;&ldquo;they&rsquo;re not ready for the hard stuff yet&rdquo;&mdash;but the effect is devastating. Students learn that school has nothing interesting to offer them.</p>
+
+    <p>Zwiers argues that <strong>the challenge IS the learning</strong>. Remove the intellectual challenge and you haven&rsquo;t made learning more accessible&mdash;you&rsquo;ve eliminated it entirely. A watered-down task doesn&rsquo;t scaffold; it patronizes. The question is never &ldquo;how do we make this easier?&rdquo; but &ldquo;how do we provide structured access to the same high-level thinking?&rdquo;</p>
+
+    <p>This is where scaffolding earns its name. Scaffolding doesn&rsquo;t mean easier&mdash;it means <strong>structured access to rigor</strong>. A scaffold around a building doesn&rsquo;t make the building shorter; it lets workers reach the top. Sentence frames, graphic organizers, strategic grouping, and translanguaging are not concessions to lower expectations. They are the structures that allow <em>all</em> students to reach the same ambitious intellectual heights.</p>
+
+    <p>The engaging part matters as much as the challenging part. Tasks must be genuinely interesting&mdash;connected to real questions, authentic problems, or compelling mysteries. If a task is challenging but boring, students comply. If it&rsquo;s engaging but easy, students are entertained. Only when both dimensions converge do students actually <em>learn</em>.</p>
+  </div>
+
+  <div class="examples-grid">
+    <div class="example-col" style="border-top:3px solid var(--deep-teal)">
+      <h4 style="color:var(--deep-teal)">History Classroom</h4>
+      <ul>
+        <li><strong>Contradictory primary sources:</strong> Students analyze two accounts of the same event that directly contradict each other (e.g., American vs. Spanish accounts of the USS Maine explosion). The intellectual challenge of reconciling contradictions is the lesson</li>
+        <li><strong>Historical argument construction:</strong> Students build evidence-based arguments from document sets&mdash;not answering comprehension questions <em>about</em> the documents, but using them to construct original claims</li>
+        <li><strong>Mystery-based lessons:</strong> &ldquo;Did President Tyler die of poison?&rdquo; Students analyze evidence and reach their own conclusions. The mystery creates engagement; the evidence analysis creates challenge</li>
+        <li><strong>Narrative construction from fragments:</strong> Students receive scattered primary sources and must construct a coherent historical narrative, making decisions about what to include, what to emphasize, and what story the evidence tells</li>
+      </ul>
+    </div>
+    <div class="example-col" style="border-top:3px solid var(--deep-teal)">
+      <h4 style="color:var(--deep-teal)">ESOL Classroom</h4>
+      <ul>
+        <li><strong>Grade-level texts with strategic supports:</strong> Rather than simplified readers, students engage with authentic grade-level materials through glossed vocabulary, visual supports, and collaborative reading protocols&mdash;the text stays rigorous, the access points multiply</li>
+        <li><strong>Academic discussion with frames:</strong> Sentence frames for academic conversations aren&rsquo;t fill-in-the-blank worksheets&mdash;they&rsquo;re launching pads for complex thinking. &ldquo;The evidence suggests ___ because ___&rdquo; demands analysis, not regurgitation</li>
+        <li><strong>Bilingual comparative presentations:</strong> Students create presentations comparing perspectives across cultures on shared concepts (justice, family, freedom)&mdash;leveraging multilingualism as a cognitive advantage, not a barrier</li>
+        <li><strong>Analytical paragraphs with scaffolded structure:</strong> Writing analytical paragraphs using claim-evidence-reasoning structure with L1 brainstorming, collaborative drafting, and peer review&mdash;the same intellectual task as their monolingual peers</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>&ldquo;The scaffold must never become a cage. Engaged pedagogy requires flexibility&mdash;the scaffold exists to empower students, not to control them.&rdquo;</p>
+    <cite>&mdash; Adapted from bell hooks, <em>Teaching to Transgress</em>, 1994</cite>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- ===== DIMENSION 3: MEANINGFUL INTERACTIONS ===== -->
+<section class="dimension fade-in" id="dim3">
+  <div class="dim-header">
+    <span class="dim-number" style="color:var(--muted-gold)">3</span>
+    <span class="dim-title">Meaningful Interactions</span>
+  </div>
+  <div class="dim-mapping" style="background:rgba(184,150,62,0.1);color:var(--muted-gold)">(The Engine &mdash; Interaction)</div>
+  <div class="dim-stripe" style="background:var(--muted-gold)"></div>
+
+  <div class="dim-body">
+    <p>Schools are full of interaction that doesn&rsquo;t mean anything. &ldquo;Turn and talk to your partner.&rdquo; &ldquo;Share one thing you noticed.&rdquo; &ldquo;Discuss with your table group.&rdquo; These directives create the <em>appearance</em> of interaction without its substance. Students comply, exchange surface-level observations, and move on. No ideas are built. No thinking is changed. No meaning is made.</p>
+
+    <p>Zwiers distinguishes between <strong>interaction as a classroom strategy</strong> (something teachers deploy) and <strong>interaction as the fifth domain of language</strong> (something students develop as a competency alongside reading, writing, listening, and speaking). This distinction is transformative. When interaction is just a strategy, it can be checked off a lesson plan. When it&rsquo;s a domain of language, it must be explicitly taught, practiced, and developed over time.</p>
+
+    <p>The building blocks of meaningful interaction are specific, learnable moves: <strong>clarifying</strong> (asking for and providing clarification), <strong>supporting ideas with evidence</strong> (grounding claims in text, data, or experience), <strong>building on and challenging</strong> one another&rsquo;s thinking (extending or pushing back on ideas respectfully), and <strong>evaluating</strong> (weighing the strength of arguments and evidence). These are the micro-moves of meaning-making&mdash;the engine that converts individual thinking into collective understanding.</p>
+
+    <p>For multilingual learners, meaningful interaction serves a dual purpose: it develops content understanding AND language proficiency simultaneously. Academic language doesn&rsquo;t develop through vocabulary lists and grammar drills&mdash;it develops through <strong>purposeful use in authentic contexts</strong>. When a student argues with a peer about whether economic or social factors caused the Great Depression, they&rsquo;re not just learning history. They&rsquo;re developing the academic discourse of historical analysis. And as Gibbons (2015) emphasizes, student-to-student talk is a unique discourse that cannot be replicated in student-to-teacher interaction.</p>
+  </div>
+
+  <div class="examples-grid">
+    <div class="example-col" style="border-top:3px solid var(--muted-gold)">
+      <h4 style="color:var(--muted-gold)">History Classroom</h4>
+      <ul>
+        <li><strong>Argument Balance Scales:</strong> Students use Zwiers&rsquo; visual tool to weigh competing causes of historical events, physically placing evidence on each side and discussing which argument holds more weight</li>
+        <li><strong>Building blocks conversations:</strong> Structured peer discussions where students explicitly extend each other&rsquo;s historical thinking: &ldquo;Building on what you said about imperialism, I think the evidence also shows&hellip;&rdquo;</li>
+        <li><strong>Collaborative primary source analysis:</strong> Partners analyze a primary source together, each responsible for different analytical lenses (sourcing, contextualization, corroboration), then synthesize their findings</li>
+        <li><strong>Cause-effect academic conversations:</strong> Structured protocols where students trace chains of causation through dialogue, challenging each other to distinguish between correlation and causation</li>
+      </ul>
+    </div>
+    <div class="example-col" style="border-top:3px solid var(--muted-gold)">
+      <h4 style="color:var(--muted-gold)">ESOL Classroom</h4>
+      <ul>
+        <li><strong>Information gap activities:</strong> Partners each have different pieces of information and must communicate authentically to complete a task&mdash;creating genuine need for language use, not performative practice</li>
+        <li><strong>QSSSA protocols:</strong> Question &rarr; Signal &rarr; Stem &rarr; Share &rarr; Assess. A structured routine that ensures every student processes, formulates, and articulates thinking before sharing</li>
+        <li><strong>Peer editing conferences:</strong> Students use academic language to give each other feedback: &ldquo;Your evidence is strong, but I think your claim could be more specific because&hellip;&rdquo; Real interaction, real language development</li>
+        <li><strong>Building blocks with accountable talk stems:</strong> Students practice specific interaction moves with scaffolded stems: &ldquo;I agree with ___ and I want to add&hellip;&rdquo; &ldquo;Can you clarify what you mean by&hellip;?&rdquo; Over time, the stems fade as the moves become natural</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>&ldquo;Without genuine interaction, you simply have a more polite version of the banking model&mdash;students &lsquo;participating&rsquo; but not truly making meaning with one another.&rdquo;</p>
+    <cite>&mdash; Adapted from bell hooks and Paulo Freire</cite>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- ===== DIMENSION 4: IDEA-BUILDING ===== -->
+<section class="dimension fade-in" id="dim4">
+  <div class="dim-header">
+    <span class="dim-number" style="color:var(--forest)">4</span>
+    <span class="dim-title">Idea-Building</span>
+  </div>
+  <div class="dim-mapping" style="background:rgba(58,107,74,0.1);color:var(--forest)">(The Purpose + The Engine &mdash; Meaning-Making &amp; Interaction)</div>
+  <div class="dim-stripe" style="background:var(--forest)"></div>
+
+  <div class="dim-body">
+    <p>This is the heart of Zwiers&rsquo; framework and the dimension that most directly challenges the dominant paradigm of American schooling. <strong>Accumulation-based learning</strong>&mdash;memorize, test, forget, repeat&mdash;is so pervasive that many educators don&rsquo;t even recognize it as a choice. It feels like &ldquo;the way school works.&rdquo; Zwiers argues it&rsquo;s the way school <em>fails</em>.</p>
+
+    <p>Idea-building is the alternative. Instead of covering content superficially and testing whether students can recall it, idea-building asks students to <strong>construct lasting conceptual understanding</strong> through sustained engagement with big ideas. Students don&rsquo;t memorize that the Great Depression happened in 1929; they build an understanding of how economic systems can collapse when speculation, inequality, and policy failures compound. The date is a fact. The understanding is an idea.</p>
+
+    <p><strong>Big-Idea Statements</strong> anchor this approach. Rather than learning objectives phrased as &ldquo;students will identify the causes of WWI,&rdquo; idea-building reframes the goal: &ldquo;Students will build the idea that complex events rarely have single causes, and that understanding causation requires weighing multiple factors and their interactions.&rdquo; The first is content coverage. The second is idea-building. The first will be forgotten by next semester. The second transfers to every complex problem students will ever encounter.</p>
+
+    <p>Ideas are constructed through interaction, refined through revision, and retained because they are <strong>meaningful</strong>. Students should leave every class with ideas they built&mdash;not just information they received. And here is where Zwiers&rsquo; vision converges with the meaning-making framework: interaction is the <em>engine</em> through which ideas get built. Without interaction, idea-building becomes just another form of individual accumulation. With interaction, ideas become collaborative, contested, refined, and ultimately stronger than any single student could build alone.</p>
+  </div>
+
+  <div class="examples-grid">
+    <div class="example-col" style="border-top:3px solid var(--forest)">
+      <h4 style="color:var(--forest)">History Classroom</h4>
+      <ul>
+        <li><strong>Big-Idea Statements:</strong> Each unit anchors around a transferable idea: &ldquo;Power structures persist because those who benefit from them control the narrative.&rdquo; Students build toward this understanding across multiple lessons and sources</li>
+        <li><strong>Conceptual timelines:</strong> Instead of chronological lists of events, students build visual maps showing how ideas developed, influenced each other, and led to consequences&mdash;tracing the <em>evolution of thinking</em>, not just the sequence of events</li>
+        <li><strong>Cause-effect visual models:</strong> Students create diagrams showing multiple causes contributing to a single effect, with weighted connections showing which factors had more influence&mdash;a visual representation of idea complexity</li>
+        <li><strong>Multi-source synthesis:</strong> Students synthesize 3&ndash;4 sources into an original historical argument, building an idea that goes beyond what any single source says. The synthesis <em>is</em> the idea-building</li>
+      </ul>
+    </div>
+    <div class="example-col" style="border-top:3px solid var(--forest)">
+      <h4 style="color:var(--forest)">ESOL Classroom</h4>
+      <ul>
+        <li><strong>Idea-Building Visual Conversations:</strong> The graphic organizer from Zwiers where students collaboratively build an idea using &ldquo;building blocks&rdquo;&mdash;each student adds a piece, and the collective construction is greater than any individual contribution</li>
+        <li><strong>Conceptual vocabulary development:</strong> Building academic vocabulary through conceptual categories rather than word lists. Students don&rsquo;t memorize &ldquo;democracy&rdquo;&mdash;they build the concept by connecting it to power, voice, representation, and their own cultural contexts</li>
+        <li><strong>Co-constructed definitions:</strong> The class builds definitions of complex concepts together through discussion, adding nuance and examples over multiple days. The definition grows as understanding grows</li>
+        <li><strong>Building blocks across proficiency levels:</strong> Newcomers contribute ideas in L1 that get translated and added to the collective understanding. WIDA Level 1 students are idea-builders too&mdash;their contributions are essential, not optional</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>&ldquo;Students should be building lasting concepts and understandings, not memorizing temporary information for tests.&rdquo;</p>
+    <cite>&mdash; Jeff Zwiers, <em>Overhauling Learning for Multilingual Students</em>, 2024</cite>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- ===== DIMENSION 5: ASSESSMENT FOR LEARNING ===== -->
+<section class="dimension fade-in" id="dim5">
+  <div class="dim-header">
+    <span class="dim-number" style="color:var(--soft-purple)">5</span>
+    <span class="dim-title">Assessment for Learning</span>
+  </div>
+  <div class="dim-stripe" style="background:var(--soft-purple)"></div>
+
+  <div class="dim-body">
+    <p>Assessment in most schools is the purest expression of accumulation-based learning. Teach content. Test content. Record score. Move on. The assessment doesn&rsquo;t shape instruction, doesn&rsquo;t develop understanding, and doesn&rsquo;t honor the messy, nonlinear process of actually learning something. It simply sorts students into performance categories.</p>
+
+    <p>Zwiers distinguishes between <strong>assessment OF learning</strong> (did you get it?) and <strong>assessment FOR learning</strong> (where are you in your thinking, and what do you need next?). Assessment OF learning serves the gradebook. Assessment FOR learning serves the <em>student</em>. In a pedagogically just classroom, every assessment is an opportunity for growth, not a verdict.</p>
+
+    <p>This means rethinking what counts as evidence of learning. Zwiers advocates for <strong>multi-dimensional evidence</strong>: student writing evaluated for idea quality rather than grammatical accuracy, paired student talk observed for the depth of interaction moves, products and performances that demonstrate conceptual understanding, idea visuals that make thinking visible, student self-assessments that develop metacognition, and teacher observation notes that capture growth over time.</p>
+
+    <p>For multilingual learners, assessment is often the site of greatest injustice. A student who has built sophisticated historical understanding through interaction and translanguaging may fail a written test because their grammar doesn&rsquo;t meet monolingual standards. The test doesn&rsquo;t measure what was learned&mdash;it measures English proficiency and calls it content knowledge. Zwiers calls this the <strong>authentic assessment gap</strong>: students rarely get to show what they truly know through meaningful demonstrations of understanding.</p>
+
+    <p>Assessment FOR learning also includes <strong>formative assessment</strong>&mdash;the ongoing, informal monitoring of student thinking that happens <em>during</em> learning, not after it. Observing a building blocks conversation tells you more about a student&rsquo;s understanding than any multiple-choice test ever could. The question shifts from &ldquo;can they select the right answer?&rdquo; to &ldquo;can they build, defend, and refine an idea?&rdquo;</p>
+  </div>
+
+  <div class="examples-grid">
+    <div class="example-col" style="border-top:3px solid var(--soft-purple)">
+      <h4 style="color:var(--soft-purple)">History Classroom</h4>
+      <ul>
+        <li><strong>Document-Based Questions:</strong> Students construct original arguments from primary sources&mdash;not select from multiple choice options. The assessment mirrors the actual work of historians: building arguments from evidence</li>
+        <li><strong>Portfolio assessment:</strong> Students curate their best historical thinking over a semester&mdash;their strongest analysis, their most developed argument, their most insightful source evaluation. Growth is visible. A single test score never could be</li>
+        <li><strong>Peer assessment of discussion:</strong> Students evaluate each other&rsquo;s contributions to academic conversations using a rubric focused on idea-building moves, not just &ldquo;participation&rdquo;</li>
+        <li><strong>Student-led conferences:</strong> Students present their best historical analysis to the teacher and explain their thinking process. The student is the narrator of their own learning, not the object of measurement</li>
+      </ul>
+    </div>
+    <div class="example-col" style="border-top:3px solid var(--soft-purple)">
+      <h4 style="color:var(--soft-purple)">ESOL Classroom</h4>
+      <ul>
+        <li><strong>WIDA Can-Do statements:</strong> Tracking growth across proficiency levels using descriptors that focus on what students CAN do&mdash;not what they can&rsquo;t. A WIDA Level 2 student who constructs a claim with evidence is demonstrating sophisticated thinking</li>
+        <li><strong>Language development portfolios:</strong> Showing language growth over time through collected writing samples, recorded conversations, and self-reflections. A single test is a snapshot; a portfolio is a story</li>
+        <li><strong>Formative observation of conversations:</strong> Using structured observation protocols during academic conversations to assess both content understanding and language development in real time</li>
+        <li><strong>Self-assessment of communicative competence:</strong> Students reflect on their ability to accomplish real communicative tasks (&ldquo;Can I explain my reasoning? Can I disagree respectfully? Can I support my idea with evidence?&rdquo;)&mdash;not grammar tests</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>&ldquo;Assessment should make learning visible and guide next steps&mdash;not just sort students into performance categories.&rdquo;</p>
+    <cite>&mdash; Adapted from Zwiers, 2024</cite>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- ===== DIMENSION 6: CRITICAL & CREATIVE THINKING ===== -->
+<section class="dimension fade-in" id="dim6">
+  <div class="dim-header">
+    <span class="dim-number" style="color:var(--blue-ink)">6</span>
+    <span class="dim-title">Critical &amp; Creative Thinking</span>
+  </div>
+  <div class="dim-stripe" style="background:var(--blue-ink)"></div>
+
+  <div class="dim-body">
+    <p>There is an insidious hierarchy in most schools: &ldquo;advanced&rdquo; students get analysis, evaluation, and creation. &ldquo;Struggling&rdquo; students&mdash;a category that disproportionately includes multilingual learners&mdash;get comprehension and recall. The implicit message is devastating: <em>you&rsquo;re not ready to think yet. First, accumulate enough knowledge. Then, maybe, we&rsquo;ll let you analyze it.</em></p>
+
+    <p>Zwiers rejects this hierarchy entirely. <strong>Critical and creative thinking are not tiers on a ladder that students climb sequentially. They are rights that every student exercises from day one.</strong> A WIDA Level 1 student can evaluate whether a source is trustworthy. A newcomer can compare cultural perspectives. A student with limited English can create an original argument using their full linguistic repertoire. The idea that higher-order thinking requires a foundation of lower-order knowledge is one of the most damaging myths in education.</p>
+
+    <p>Critical thinking in a pedagogically just classroom means <strong>analyzing, evaluating, and questioning</strong>&mdash;not just content, but the structures that shape how content is presented. Whose story is told? Whose is omitted? Why does this textbook frame this event this way? Critical thinking is inherently connected to justice because it teaches students to see and challenge the systems they navigate.</p>
+
+    <p>Creative thinking means <strong>generating, imagining, and constructing</strong>&mdash;not just reproducing what has already been said. Students create counter-narratives, design solutions, compose arguments, and build understanding that didn&rsquo;t exist before they entered the conversation. Creativity isn&rsquo;t an art-class privilege; it&rsquo;s the fundamental human act of making something new from what you know.</p>
+
+    <p>Multilingual students are uniquely positioned for both critical and creative thinking. They navigate multiple cultural frameworks daily, code-switch across linguistic and social contexts, and hold perspectives that monolingual students literally cannot access. Their multilingualism is not a barrier to higher-order thinking&mdash;it is a <strong>cognitive advantage</strong> for it.</p>
+  </div>
+
+  <div class="examples-grid">
+    <div class="example-col" style="border-top:3px solid var(--blue-ink)">
+      <h4 style="color:var(--blue-ink)">History Classroom</h4>
+      <ul>
+        <li><strong>Source reliability evaluation:</strong> Students don&rsquo;t just read primary sources&mdash;they interrogate them. Who wrote this? Why? What are they not saying? Students learn to distrust narratives, including textbook narratives, and demand evidence</li>
+        <li><strong>Competing historical narratives:</strong> Students read two accounts of the same event from different perspectives (colonizer vs. colonized, labor vs. management) and analyze how perspective shapes the &ldquo;truth&rdquo; of what happened</li>
+        <li><strong>Counter-narratives from marginalized perspectives:</strong> Students research and write history from the perspective of people typically excluded from textbooks&mdash;enslaved people, indigenous communities, immigrant workers, women. This is both critical thinking and creative construction</li>
+        <li><strong>Museum exhibit design:</strong> Students curate and design exhibits that challenge dominant historical narratives, making decisions about what artifacts to include, what stories to tell, and what audiences need to understand</li>
+      </ul>
+    </div>
+    <div class="example-col" style="border-top:3px solid var(--blue-ink)">
+      <h4 style="color:var(--blue-ink)">ESOL Classroom</h4>
+      <ul>
+        <li><strong>Cross-cultural perspective comparison:</strong> Students compare how different cultures understand shared concepts (justice, success, family obligation) and analyze why these differences exist. Multilingualism is the tool, not the obstacle</li>
+        <li><strong>Media bias analysis:</strong> Students evaluate English-language media for bias, perspective, and omission&mdash;using their outsider perspective as an analytical advantage. They see what native speakers often miss because they stand outside the cultural assumptions</li>
+        <li><strong>Bilingual advocacy projects:</strong> Students identify an issue in their community and create bilingual advocacy materials (posters, presentations, letters). They exercise critical thinking about power structures AND creative thinking about communication</li>
+        <li><strong>Language-and-power analysis:</strong> Students examine how language choices shape perception and power. Why does &ldquo;illegal alien&rdquo; feel different from &ldquo;undocumented immigrant&rdquo;? Students who navigate multiple languages are experts on this topic</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>&ldquo;The classroom remains the most radical space of possibility in the academy.&rdquo;</p>
+    <cite>&mdash; bell hooks, <em>Teaching to Transgress</em>, 1994</cite>
+  </div>
+</section>
+
+<div class="section-divider"><hr></div>
+
+<!-- ===== CLOSING ===== -->
+<section class="closing fade-in">
+  <h2>The Dimensions Work Together</h2>
+
+  <p>The six dimensions of Pedagogical Justice are not a checklist to complete. They are interdependent&mdash;each one strengthens and depends on the others. Agency without challenge is empty choice. Challenge without interaction is isolated struggle. Interaction without idea-building is pleasant conversation. Idea-building without assessment for learning has no feedback loop. And none of it means anything without the critical and creative thinking that makes learning matter beyond the classroom walls.</p>
+
+  <p>Your Meaning-Making framework is already a vehicle for delivering all six dimensions. When you design a lesson around scaffolded interaction, translanguaging, and identity affirmation, you are creating the conditions for agency, challenge, meaningful interaction, idea-building, authentic assessment, and critical thinking&mdash;whether or not you name each dimension explicitly.</p>
+
+  <p>The power of knowing the six dimensions isn&rsquo;t that you must name them in every lesson. It&rsquo;s that you can recognize when your practice is touching on them, and make sure your teaching demonstrates a <em>complete</em> vision of just teaching&mdash;not just the parts that come most naturally.</p>
+
+  <div class="closing-tip">
+    <p>You don&rsquo;t need to name all six dimensions. But your teaching should <strong>show</strong> all six&mdash;agency, challenge, interaction, idea-building, meaningful assessment, and critical thinking&mdash;even if those words never appear in a lesson plan.</p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  Zwiers, J. (2024). <em>Overhauling Learning for Multilingual Students.</em>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

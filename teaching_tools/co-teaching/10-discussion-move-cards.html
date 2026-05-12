@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discussion Move Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #fff; padding: 30px 20px; color: #222; }
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn { padding: 8px 24px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .page { max-width: 720px; margin: 0 auto; }
+  .title { text-align: center; font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .card { border: 2px solid #333; min-height: 165px; display: flex; flex-direction: column; }
+  .head { padding: 10px 12px; color: #fff; font-weight: 800; }
+  .head .icon { font-size: 22px; line-height: 1; margin-bottom: 4px; }
+  .head .name { font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .head.probe { background: #5B8DBE; }
+  .head.para { background: #6b8f71; }
+  .head.build { background: #c08b30; }
+  .head.chal { background: #c45d3e; }
+  .head.clar { background: #8b5e83; }
+  .body { padding: 10px 12px; font-size: 11.5px; line-height: 1.55; flex: 1; }
+  .when { font-size: 9px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .when-text { font-style: italic; color: #555; margin-bottom: 8px; font-size: 10.5px; }
+  .stems { background: #faf8f4; padding: 8px 10px; border-left: 3px solid #1a1a2e; font-size: 10.5px; line-height: 1.6; }
+  .stems .stem { display: block; padding: 1px 0; }
+  .last-card { grid-column: 1 / -1; }
+  @media print { body { padding: 0.3in; } .screen-only { display: none; } }
+  @page { margin: 0.4in; size: portrait; }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <h1>Discussion Move Cards</h1>
+  <p>Five conversation moves &mdash; print, cut, distribute</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="page">
+  <div class="title">Discussion Move Cards</div>
+  <div class="sub">Five moves that turn a conversation into thinking. Hand them out before the discussion.</div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="head probe"><div class="icon">?</div><div class="name">Probe</div></div>
+      <div class="body">
+        <div class="when">When</div>
+        <div class="when-text">A peer says something interesting but unfinished.</div>
+        <div class="stems"><span class="stem">What makes you say that?</span><span class="stem">Can you say more about ___?</span><span class="stem">What evidence supports that?</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head para"><div class="icon">&#10162;</div><div class="name">Paraphrase</div></div>
+      <div class="body">
+        <div class="when">When</div>
+        <div class="when-text">You want to confirm what someone said.</div>
+        <div class="stems"><span class="stem">So you're saying ___.</span><span class="stem">If I heard you right, ___.</span><span class="stem">Your point is that ___?</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head build"><div class="icon">+</div><div class="name">Build</div></div>
+      <div class="body">
+        <div class="when">When</div>
+        <div class="when-text">You agree and want to add to a peer's idea.</div>
+        <div class="stems"><span class="stem">I agree, and I'd add ___.</span><span class="stem">Building on that, ___.</span><span class="stem">That connects to ___.</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="head chal"><div class="icon">&ne;</div><div class="name">Challenge</div></div>
+      <div class="body">
+        <div class="when">When</div>
+        <div class="when-text">You see a flaw, exception, or other side.</div>
+        <div class="stems"><span class="stem">I see it differently because ___.</span><span class="stem">But what about ___?</span><span class="stem">An exception might be ___.</span></div>
+      </div>
+    </div>
+
+    <div class="card last-card">
+      <div class="head clar"><div class="icon">&#9788;</div><div class="name">Clarify</div></div>
+      <div class="body">
+        <div class="when">When</div>
+        <div class="when-text">You don't understand or want a definition.</div>
+        <div class="stems"><span class="stem">What do you mean by ___?</span><span class="stem">Could you give an example?</span><span class="stem">I'm not sure I follow &mdash; could you say it another way?</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

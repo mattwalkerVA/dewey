@@ -2,10 +2,11 @@
 
 Takes a lesson plan and a target proficiency level, then uses Claude to
 produce a scaffolded version with concrete language supports. This runs
-as a sub-call to the API — the main agent delegates differentiation here.
+as a sub-call to the API - the main agent delegates differentiation here.
 """
 
 import anthropic
+
 import config
 
 DIFFERENTIATION_PROMPT = """\

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tiered Vocabulary Triage</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #fff; padding: 30px 20px; color: #222; }
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn { padding: 8px 24px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .page { max-width: 720px; margin: 0 auto; }
+  .title { text-align: center; font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 16px; }
+  .meta-line { display: flex; gap: 30px; margin-bottom: 16px; justify-content: center; }
+  .meta-field { font-size: 12px; font-weight: 600; color: #555; }
+  .meta-blank { display: inline-block; width: 160px; border-bottom: 1px solid #ccc; margin-left: 6px; }
+  .key { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; font-size: 10px; }
+  .key-card { border: 1.5px solid #333; padding: 8px 10px; border-radius: 4px; }
+  .key-card.t1 { background: #f4f1ec; }
+  .key-card.t2 { background: #fff4e6; }
+  .key-card.t3 { background: #e8f0e8; }
+  .key-card strong { display: block; font-size: 11px; margin-bottom: 2px; }
+  table { width: 100%; border-collapse: collapse; border: 2px solid #333; }
+  th { background: #1a1a2e; color: #fff; padding: 8px 10px; font-size: 10px; font-weight: 800; text-align: left; letter-spacing: 0.5px; text-transform: uppercase; }
+  th.t2 { background: #c45d3e; }
+  th.t3 { background: #6b8f71; }
+  td { border: 1px solid #333; padding: 8px 10px; font-size: 11px; line-height: 1.5; vertical-align: top; min-height: 32px; }
+  td.lr { border-right: 2px solid #333; }
+  td.empty { height: 32px; }
+  .who { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid #333; border-top: none; }
+  .who-cell { padding: 10px 12px; font-size: 11px; min-height: 50px; }
+  .who-cell.l { border-right: 1px solid #333; }
+  .who-label { font-size: 10px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  @media print { body { padding: 0.3in; } .screen-only { display: none; } }
+  @page { margin: 0.4in; size: portrait; }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <h1>Tiered Vocabulary Triage</h1>
+  <p>Beck Tier 1/2/3 sorter &mdash; with co-teacher division</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="page">
+  <div class="title">Tiered Vocabulary Triage</div>
+  <div class="sub">Sort the unit's words. Decide who pre-teaches what.</div>
+  <div class="meta-line">
+    <div class="meta-field">Unit: <span class="meta-blank"></span></div>
+    <div class="meta-field">Text/Source: <span class="meta-blank"></span></div>
+  </div>
+  <div class="key">
+    <div class="key-card t1"><strong>Tier 1 &mdash; Everyday</strong>Familiar concept words MLLs may not know in English (<em>river, soldier, scared</em>).</div>
+    <div class="key-card t2"><strong>Tier 2 &mdash; Academic</strong>High-utility across subjects (<em>analyze, compare, claim, however</em>).</div>
+    <div class="key-card t3"><strong>Tier 3 &mdash; Domain</strong>Subject-specific, low-frequency (<em>federalism, metaphor, judicial review</em>).</div>
+  </div>
+  <table>
+    <thead><tr><th>Tier 1</th><th class="t2">Tier 2</th><th class="t3">Tier 3</th></tr></thead>
+    <tbody>
+      <tr><td class="lr empty"></td><td class="lr empty"></td><td class="empty"></td></tr>
+      <tr><td class="lr empty"></td><td class="lr empty"></td><td class="empty"></td></tr>
+      <tr><td class="lr empty"></td><td class="lr empty"></td><td class="empty"></td></tr>
+      <tr><td class="lr empty"></td><td class="lr empty"></td><td class="empty"></td></tr>
+      <tr><td class="lr empty"></td><td class="lr empty"></td><td class="empty"></td></tr>
+      <tr><td class="lr empty"></td><td class="lr empty"></td><td class="empty"></td></tr>
+    </tbody>
+  </table>
+  <div class="who">
+    <div class="who-cell l"><div class="who-label">ESOL pre-teaches (small group, before lesson)</div></div>
+    <div class="who-cell"><div class="who-label">Content teaches in context (whole class, during lesson)</div></div>
+  </div>
+</div>
+</body>
+</html>
