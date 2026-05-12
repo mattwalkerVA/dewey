@@ -161,6 +161,25 @@ class Memory:
 
         return [self._row_to_dict(row) for row in rows]
 
+    def delete_collection(self, collection: str) -> int:
+        """Delete all memories in a collection and return the number removed."""
+        row = self.conn.execute(
+            "SELECT COUNT(*) FROM memories WHERE collection = ?",
+            (collection,),
+        ).fetchone()
+        count = row[0]
+        self.conn.execute("DELETE FROM memories WHERE collection = ?", (collection,))
+        self.conn.commit()
+        return count
+
+    def delete_all(self) -> int:
+        """Delete all stored memories and return the number removed."""
+        row = self.conn.execute("SELECT COUNT(*) FROM memories").fetchone()
+        count = row[0]
+        self.conn.execute("DELETE FROM memories")
+        self.conn.commit()
+        return count
+
     def has_profile(self) -> bool:
         """Check if a teacher profile exists."""
         row = self.conn.execute(

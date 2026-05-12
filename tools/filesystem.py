@@ -14,13 +14,33 @@ def slugify(text: str, max_len: int = 60) -> str:
     return text[:max_len].rstrip("-")
 
 
+def frontmatter_value(text: str) -> str:
+    """Format a simple quoted YAML frontmatter value."""
+    return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def parse_frontmatter(text: str) -> dict:
+    """Extract simple key/value metadata from lesson-plan frontmatter."""
+    metadata = {}
+    if not text.startswith("---"):
+        return metadata
+    for line in text.split("\n")[1:]:
+        if line.startswith("---"):
+            break
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        metadata[key.strip()] = value.strip().strip('"')
+    return metadata
+
+
 def save_lesson_plan(title: str, content: str, grade: str = "", subject: str = "") -> str:
     """Save a lesson plan as a markdown file.
 
     Returns the path to the saved file.
     """
     timestamp = datetime.now().strftime("%Y-%m-%d")
-    slug = slugify(title)
+    slug = slugify(title) or "untitled-lesson"
     base_filename = f"{timestamp}_{slug}"
     filepath = config.PLANS_DIR / f"{base_filename}.md"
     suffix = 2
@@ -31,13 +51,13 @@ def save_lesson_plan(title: str, content: str, grade: str = "", subject: str = "
     # Build frontmatter
     frontmatter_lines = [
         "---",
-        f"title: \"{title}\"",
+        f"title: {frontmatter_value(title)}",
         f"date: {timestamp}",
     ]
     if grade:
-        frontmatter_lines.append(f"grade: \"{grade}\"")
+        frontmatter_lines.append(f"grade: {frontmatter_value(grade)}")
     if subject:
-        frontmatter_lines.append(f"subject: \"{subject}\"")
+        frontmatter_lines.append(f"subject: {frontmatter_value(subject)}")
     frontmatter_lines.append("---\n")
 
     full_content = "\n".join(frontmatter_lines) + "\n" + content
@@ -51,19 +71,14 @@ def list_lesson_plans() -> list[dict]:
     plans = []
     for f in sorted(config.PLANS_DIR.glob("*.md"), reverse=True):
         text = f.read_text(encoding="utf-8")
-        # Extract title from frontmatter
-        title = f.stem
-        if text.startswith("---"):
-            for line in text.split("\n")[1:]:
-                if line.startswith("title:"):
-                    title = line.split(":", 1)[1].strip().strip('"')
-                    break
-                if line.startswith("---"):
-                    break
+        metadata = parse_frontmatter(text)
+        title = metadata.get("title", f.stem)
         plans.append({
             "filename": f.name,
             "path": str(f),
             "title": title,
+            "grade": metadata.get("grade", ""),
+            "subject": metadata.get("subject", ""),
             "modified": datetime.fromtimestamp(f.stat().st_mtime).isoformat(),
         })
     return plans

@@ -23,6 +23,18 @@ TOOL_HANDLERS = {
 }
 
 
+HELP_TEXT = """\
+Commands:
+  /help              Show this command list.
+  /save [title]      Save Dewey's last response as a lesson plan.
+  /plans             List saved lesson plans.
+  /profile           Show remembered teacher profile notes.
+  /forget profile    Delete remembered teacher profile notes.
+  /forget all        Delete all local memory.
+  quit               Exit Dewey.
+"""
+
+
 def ferpa_filter(text: str) -> tuple[str, bool]:
     """Strip potential student PII from text. Returns (cleaned_text, was_modified)."""
     modified = False
@@ -60,6 +72,45 @@ def build_context(memory: Memory, query: str) -> tuple[str, str]:
 def sanitize_for_storage(text: str) -> tuple[str, bool]:
     """Apply the FERPA filter before persisting any generated content."""
     return ferpa_filter(text)
+
+
+def format_lesson_plan_list() -> str:
+    """Return a readable list of saved lesson plans."""
+    plans = filesystem.list_lesson_plans()
+    if not plans:
+        return "No saved lesson plans yet."
+    lines = ["Saved lesson plans:"]
+    for plan in plans:
+        details = []
+        if plan.get("grade"):
+            details.append(f"Grade {plan['grade']}")
+        if plan.get("subject"):
+            details.append(plan["subject"])
+        suffix = f" ({', '.join(details)})" if details else ""
+        lines.append(f"- {plan['title']}{suffix}: {plan['path']}")
+    return "\n".join(lines)
+
+
+def format_teacher_profile(memory: Memory) -> str:
+    """Return a readable view of remembered teacher profile notes."""
+    profile_items = memory.get_all(config.PROFILE_COLLECTION)
+    if not profile_items:
+        return "No teacher profile notes saved yet."
+    lines = ["Remembered teacher profile:"]
+    lines.extend(f"- {item['content']}" for item in profile_items)
+    return "\n".join(lines)
+
+
+def handle_memory_delete(memory: Memory, target: str) -> str:
+    """Delete requested memory scope."""
+    normalized = target.strip().lower()
+    if normalized in {"profile", "teacher profile"}:
+        count = memory.delete_collection(config.PROFILE_COLLECTION)
+        return f"Deleted {count} teacher profile note{'s' if count != 1 else ''}."
+    if normalized in {"all", "everything"}:
+        count = memory.delete_all()
+        return f"Deleted {count} memory item{'s' if count != 1 else ''}."
+    return "Use '/forget profile' to clear profile notes or '/forget all' to clear all local memory."
 
 
 def extract_and_store_memories(
@@ -139,6 +190,7 @@ def main(reset: bool):
         run_onboarding(memory, ferpa_filter)
 
     click.echo("Ready to plan. Type '/save' to save the last response, 'quit' to exit.\n")
+    click.echo("Type '/help' to see available commands.\n")
 
     messages: list[dict] = []
     last_response: str = ""
@@ -156,6 +208,23 @@ def main(reset: bool):
         if teacher_input.lower() in ("quit", "exit", "q"):
             click.echo("See you next period.")
             break
+
+        if teacher_input.lower() == "/help":
+            click.echo(HELP_TEXT)
+            continue
+
+        if teacher_input.lower() == "/plans":
+            click.echo(f"\n{format_lesson_plan_list()}\n")
+            continue
+
+        if teacher_input.lower() == "/profile":
+            click.echo(f"\n{format_teacher_profile(memory)}\n")
+            continue
+
+        if teacher_input.lower().startswith("/forget"):
+            target = teacher_input[7:].strip()
+            click.echo(f"\n{handle_memory_delete(memory, target)}\n")
+            continue
 
         # /save — write the last response to a markdown file
         if teacher_input.lower().startswith("/save"):
