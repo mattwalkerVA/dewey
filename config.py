@@ -44,11 +44,33 @@ FERPA_PATTERNS = [
         r"(?:has|needs|receives|is\s+on|is\s+under)\s+(?:an?\s+)?"
         r"(?:IEP|504|504\s+plan|accommodation|intervention|evaluation)\b",
     ),
+    # Single first name + performance verb + number ("Max got 50%", "Leah scored 40")
+    re.compile(
+        r"\b(?!(?:" + "|".join(_FRAMEWORK_TERMS) + r")\b)"
+        r"[A-Z][a-z]+\s+"
+        r"(?i:got|scored|earned|received|achieved|made|missed|completed|attempted|"
+        r"failed|passed|finished)\s+"
+        r"(?:an?\s+|the\s+)?(?=\d)",
+    ),
+    # First name (1 or 2 caps) followed within ~40 chars by an assessment-context noun
+    re.compile(
+        r"\b(?!(?:" + "|".join(_FRAMEWORK_TERMS) + r")\b)"
+        r"[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\b[^.!?\n]{0,40}\b"
+        r"(?i:on|in|with|after|before|during|for)\s+"
+        r"(?:his|her|their|the|a|an)\s+"
+        r"(?i:summative|formative|quiz|test|exam|benchmark|reading\s+level|"
+        r"lexile|rubric|assessment|evaluation|conference|intervention|IEP|504)\b",
+    ),
+    # List of three or more bare first names ("Max, Wynn, and Fred")
+    re.compile(
+        r"\b(?!(?:" + "|".join(_FRAMEWORK_TERMS) + r")\b)"
+        r"[A-Z][a-z]+,\s+[A-Z][a-z]+(?:,\s*(?:and\s+|or\s+)?[A-Z][a-z]+)+\b",
+    ),
     # Student ID patterns
     re.compile(r"\b(?:student\s*(?:id|#|number))\s*[:.]?\s*\d{4,}\b", re.IGNORECASE),
     # IEP/504 with names
     re.compile(
-        r"\b(?:IEP|504\s*plan)\s+(?:for|of)\s+[A-Z][a-z]+\s+[A-Z][a-z]+\b",
+        r"\b(?:IEP|504\s*plan)\s+(?:for|of)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\b",
     ),
     # SSN patterns
     re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),

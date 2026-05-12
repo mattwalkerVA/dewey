@@ -156,6 +156,52 @@ def test_ferpa_filter_removes_student_name_with_grade():
     assert "Maria Lopez" not in cleaned
 
 
+def test_ferpa_filter_catches_first_name_with_score():
+    cleaned, modified = lesson.ferpa_filter(
+        "Max got an 50% on his summative. Leah got a 40% on her summative."
+    )
+    assert modified is True
+    assert "Max" not in cleaned
+    assert "Leah" not in cleaned
+
+
+def test_ferpa_filter_catches_first_name_with_assessment_context():
+    cleaned, modified = lesson.ferpa_filter(
+        "Aiden conferenced on his summative last Friday."
+    )
+    assert modified is True
+    assert "Aiden" not in cleaned
+
+
+def test_ferpa_filter_catches_three_name_list():
+    cleaned, modified = lesson.ferpa_filter(
+        "Three groups: Max, Wynn, and Fred need to be separate."
+    )
+    assert modified is True
+    assert "Max" not in cleaned
+    assert "Wynn" not in cleaned
+    assert "Fred" not in cleaned
+
+
+def test_ferpa_filter_does_not_strip_class_average():
+    cleaned, modified = lesson.ferpa_filter("Class average was 95%.")
+    assert modified is False
+    assert "Class average" in cleaned
+
+
+def test_ferpa_filter_does_not_strip_curriculum_titles():
+    cleaned, modified = lesson.ferpa_filter(
+        "We are reading Romeo and Juliet for our anchor text."
+    )
+    assert modified is False
+
+
+def test_ferpa_filter_does_not_strip_sentence_initial_verbs():
+    cleaned, modified = lesson.ferpa_filter("Mark the answer key before class.")
+    assert modified is False
+    assert "Mark the answer key" in cleaned
+
+
 # --- Streaming with a fake Anthropic client ---
 
 
