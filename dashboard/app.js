@@ -641,8 +641,21 @@ function PlanLesson({ setStatus, assist }) {
     setStreamStatus("idle");
   }
 
+  const printFooter = useMemo(() => {
+    const now = new Date();
+    const parts = [
+      form.subject,
+      form.grade ? `Grade ${form.grade}` : null,
+      `${form.timeMinutes} min`,
+      `WIDA ${form.widaMin}–${form.widaMax}`,
+      `KLU: ${form.klu}`,
+    ].filter(Boolean);
+    return `Dewey · ${parts.join(" · ")} · ${now.toLocaleDateString()}`;
+  }, [form]);
+
   return html`
     <section className="plan-grid">
+      <div className="print-footer" aria-hidden="true">${printFooter}</div>
       <form className="panel form plan-form" onSubmit=${submit}>
         <h3>Plan a lesson</h3>
         <${StandardField}
@@ -725,6 +738,15 @@ function PlanLesson({ setStatus, assist }) {
                   disabled=${streamStatus === "streaming"}
                 >
                   Save to library
+                </button>
+                <button
+                  className="secondary"
+                  type="button"
+                  onClick=${() => window.print()}
+                  disabled=${streamStatus === "streaming"}
+                  title="Open the browser print dialog — save as PDF or print"
+                >
+                  Print / Save as PDF
                 </button>
               </section>
             `

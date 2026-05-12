@@ -774,13 +774,33 @@ textarea {
 
 .save-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 10px;
   align-items: center;
 }
 
 .save-title {
   margin: 0;
+}
+
+.secondary {
+  background: var(--surface);
+  color: var(--accent-dark);
+  border: 1px solid var(--accent);
+  padding-inline: 14px;
+}
+
+.secondary:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+
+.secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.print-footer {
+  display: none;
 }
 
 @media (max-width: 980px) {
@@ -790,6 +810,194 @@ textarea {
 
   .plan-form {
     position: static;
+  }
+}
+
+/* --- Print layout (matches teaching_tools aesthetic) ----------------- */
+
+@media print {
+  @page {
+    margin: 0.55in;
+    size: portrait;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background: #fff;
+    color: #1a1a2e;
+  }
+
+  .app {
+    display: block;
+    min-height: 0;
+  }
+
+  .sidebar,
+  .topbar,
+  .pii-toggle,
+  .status,
+  .toolbar,
+  .plan-form,
+  .pii-review,
+  .lesson-stream-header,
+  .stream-status,
+  .stream-notice,
+  .violations,
+  .save-row,
+  .companion-blurb,
+  .demo-prompts,
+  .empty {
+    display: none !important;
+  }
+
+  .main {
+    padding: 0;
+  }
+
+  .plan-grid,
+  .plan-output {
+    display: block;
+  }
+
+  .lesson-stream,
+  .companion-tools {
+    background: #fff;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 18px;
+  }
+
+  .lesson-rendered {
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    max-height: none;
+    overflow: visible;
+    color: #1a1a2e;
+    font-family: "DM Sans", Inter, system-ui, sans-serif;
+    font-size: 11.5pt;
+    line-height: 1.45;
+  }
+
+  .lesson-rendered h1 {
+    font-size: 18pt;
+    text-align: center;
+    border-bottom: 2px solid #1a1a2e;
+    padding-bottom: 6px;
+    margin: 0 0 12px;
+    color: #1a1a2e;
+  }
+
+  .lesson-rendered h2 {
+    font-size: 13pt;
+    color: #1a1a2e;
+    border-bottom: 1px solid #888;
+    padding-bottom: 3px;
+    margin: 14px 0 6px;
+    text-transform: none;
+    letter-spacing: 0;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .lesson-rendered h3 {
+    font-size: 11pt;
+    color: #1a1a2e;
+    background: transparent;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 12px 0 4px;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .lesson-rendered h4 {
+    font-size: 11pt;
+    color: #fff;
+    background: #1a1a2e;
+    border-left: none;
+    padding: 4px 8px;
+    margin: 10px 0 6px;
+    border-radius: 0;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .lesson-rendered p,
+  .lesson-rendered li {
+    font-size: 10.5pt;
+    color: #1a1a2e;
+  }
+
+  .lesson-rendered ul,
+  .lesson-rendered ol {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .lesson-rendered a {
+    color: #1a1a2e;
+    text-decoration: none;
+  }
+
+  .lesson-rendered a[href^="/teaching_tools/"]::after {
+    content: " ↗";
+    color: #888;
+  }
+
+  .lesson-rendered.streaming::after {
+    display: none;
+  }
+
+  .companion-tools h3 {
+    font-size: 13pt;
+    color: #1a1a2e;
+    border-bottom: 1px solid #888;
+    padding-bottom: 3px;
+    margin: 0 0 8px;
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .companion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .companion-card {
+    border: 1px solid #1a1a2e;
+    background: #fff;
+    color: #1a1a2e;
+    padding: 8px 10px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .companion-name {
+    color: #1a1a2e;
+    font-weight: 700;
+  }
+
+  .companion-path {
+    color: #555;
+  }
+
+  .print-footer {
+    display: block;
+    position: fixed;
+    bottom: 0.25in;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #888;
+    font-family: "DM Sans", Inter, system-ui, sans-serif;
   }
 }
 
