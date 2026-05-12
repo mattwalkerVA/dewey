@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Domains x 4 KLUs - WIDA x Zwiers Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f4f5f9;min-height:100vh}
+button{font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const{useState}=React;
+const DOMAINS=[
+{name:"Listening",icon:"\u{1F442}",color:"#5B8DBE",lightBg:"#EDF3F9"},
+{name:"Speaking",icon:"\u{1F5E3}\uFE0F",color:"#E07A5F",lightBg:"#FDF0ED"},
+{name:"Reading",icon:"\u{1F4D6}",color:"#6A9B4F",lightBg:"#EFF5EB"},
+{name:"Writing",icon:"\u270D\uFE0F",color:"#7A3A96",lightBg:"#F4EBF7"},
+{name:"Interact",icon:"\u{1F4AC}",color:"#C4880D",lightBg:"#FBF5E6",isNew:true}
+];
+const KLUS=[
+{name:"Narrate",icon:"\u{1F4D5}",color:"#C05740",tagline:"Tell the story"},
+{name:"Inform",icon:"\u{1F4CB}",color:"#2E6FA8",tagline:"Present the facts"},
+{name:"Explain",icon:"\u{1F52C}",color:"#558B3A",tagline:"Unpack the why & how"},
+{name:"Argue",icon:"\u2696\uFE0F",color:"#7A3A96",tagline:"Make your case"}
+];
+const M={
+"Listening\xD7Narrate":{title:"Listening to Narrate",classroom:"Students listen to a recorded oral history from a WWII veteran and identify narrative elements \u2014 setting, complication, resolution \u2014 to later reconstruct the account.",task:"Listen to the audio testimony. What was the turning point in the speaker\u2019s story? Note the sequence of events.",stems:["The speaker described\u2026","First\u2026 then\u2026 after that\u2026","The story shifted when\u2026"],proficiency:{low:"Identify key events using a visual timeline while listening",high:"Analyze how the narrator\u2019s tone shifts to signal the complication and resolution"}},
+"Listening\xD7Inform":{title:"Listening to Inform",classroom:"Students listen to a teacher\u2019s presentation on the water cycle and take structured notes to organize factual information.",task:"As you listen, categorize each stage of the water cycle into the correct section of your graphic organizer.",stems:["The main stages are\u2026","This is classified as\u2026","Compared to evaporation, condensation\u2026"],proficiency:{low:"Match spoken key terms to labeled images during the presentation",high:"Synthesize the presentation into a written summary with technical vocabulary"}},
+"Listening\xD7Explain":{title:"Listening to Explain",classroom:"Students listen to a peer explain their math solution strategy and evaluate whether the reasoning is sequential and complete.",task:"Listen to your partner\u2019s explanation. Can you identify every step? Is there a gap in the causal chain?",stems:["They said this happens because\u2026","The step I\u2019m missing is\u2026","So the cause of ___ is\u2026"],proficiency:{low:"Follow along with a visual flowchart as the partner explains",high:"Identify logical gaps and suggest where the explanation breaks down"}},
+"Listening\xD7Argue":{title:"Listening to Argue",classroom:"Students listen to a structured debate and evaluate the strength of each side\u2019s evidence and reasoning.",task:"As you listen, rate each argument: Is the claim clear? Is the evidence strong? Does the reasoning connect them?",stems:["Their strongest point was\u2026","The evidence didn\u2019t support\u2026 because\u2026","A counterclaim could be\u2026"],proficiency:{low:"Use a T-chart to sort claims from each side while listening",high:"Evaluate which side used more compelling evidence and explain why"}},
+"Speaking\xD7Narrate":{title:"Speaking to Narrate",classroom:"Students orally retell a personal experience connected to a social studies immigration unit, using narrative structure.",task:"Share your family\u2019s story of moving to a new place. Include the context, what happened, and how it turned out.",stems:["It all started when\u2026","The hardest part was\u2026","In the end\u2026"],proficiency:{low:"Retell using sentence frames and a sequenced picture prompt",high:"Deliver a polished oral narrative with descriptive language and reflective commentary"}},
+"Speaking\xD7Inform":{title:"Speaking to Inform",classroom:"Students give a short oral presentation comparing two ecosystems, using academic vocabulary to describe and categorize.",task:"Present to your group: How are the desert and rainforest ecosystems similar and different?",stems:["Both ecosystems have\u2026","Unlike the desert, the rainforest\u2026","This can be categorized as\u2026"],proficiency:{low:"Use a Venn diagram as a visual support while speaking",high:"Present fluently with embedded comparisons and domain-specific terminology"}},
+"Speaking\xD7Explain":{title:"Speaking to Explain",classroom:"Students verbally walk through their math problem-solving process, explaining each step and why it works.",task:"Explain to your partner how you solved the equation. Walk them through your reasoning step by step.",stems:["First I\u2026 because\u2026","This step works because\u2026","The reason I chose this method is\u2026"],proficiency:{low:"Use a completed worked example to point and explain each step",high:"Explain the strategy AND why alternative approaches would or wouldn\u2019t work"}},
+"Speaking\xD7Argue":{title:"Speaking to Argue",classroom:"Students defend a position in a structured academic debate on a current issue, citing evidence from sources.",task:"Argue your assigned position. State your claim, support it with at least two pieces of evidence, and address one counterclaim.",stems:["I claim that\u2026 because\u2026","According to the source\u2026","While opponents argue\u2026, the evidence shows\u2026"],proficiency:{low:"Use claim-evidence-reasoning sentence frames during the debate",high:"Deliver a fluid argument with embedded rebuttals and rhetorical awareness"}},
+"Reading\xD7Narrate":{title:"Reading to Narrate",classroom:"Students read a historical narrative about a soldier\u2019s WWI experience and analyze how narrative techniques convey meaning.",task:"Read the account. How does the author use sequence and detail to make you feel the tension of trench warfare?",stems:["The author builds tension by\u2026","The sequence of events shows\u2026","This detail suggests\u2026"],proficiency:{low:"Use a story map to track characters, setting, and events while reading",high:"Analyze the author\u2019s narrative choices and their effect on the reader"}},
+"Reading\xD7Inform":{title:"Reading to Inform",classroom:"Students read an informational text about types of government and extract, organize, and compare key facts.",task:"Read the article. Create a chart comparing democracy, monarchy, and dictatorship across three categories.",stems:["According to the text\u2026","One key difference is\u2026","Both systems share\u2026"],proficiency:{low:"Highlight key facts in a modified text with guiding annotations",high:"Synthesize information across multiple sources into an original comparison"}},
+"Reading\xD7Explain":{title:"Reading to Explain",classroom:"Students read a science text explaining photosynthesis and trace the causal/sequential process described.",task:"Read the passage. Map out each step of photosynthesis as a cause-and-effect chain.",stems:["This happens because\u2026","The next step in the process is\u2026","As a result of\u2026"],proficiency:{low:"Match labeled diagrams to the corresponding text sections",high:"Evaluate whether the text\u2019s explanation is complete and identify any missing steps"}},
+"Reading\xD7Argue":{title:"Reading to Argue",classroom:"Students read an editorial and identify the author\u2019s claim, supporting evidence, and reasoning \u2014 then evaluate its strength.",task:"What is the author arguing? What evidence do they use? Is it convincing? Why or why not?",stems:["The author claims that\u2026","They support this with\u2026","This evidence is/isn\u2019t convincing because\u2026"],proficiency:{low:"Use a graphic organizer to separate claim, evidence, and reasoning",high:"Write a critical response evaluating the strength of the argument"}},
+"Writing\xD7Narrate":{title:"Writing to Narrate",classroom:"Students write a personal narrative connecting a family tradition to a cultural studies unit, using narrative structure.",task:"Write a story about a tradition in your family. Orient the reader, develop the events, and reflect on the meaning.",stems:["It was the first time I\u2026","Everything changed when\u2026","Looking back, I realize\u2026"],proficiency:{low:"Use a story map template and sentence frames to draft the narrative",high:"Craft a polished narrative with literary techniques, dialogue, and reflective closure"}},
+"Writing\xD7Inform":{title:"Writing to Inform",classroom:"Students write a research report presenting factual information about a country, organized by categories.",task:"Write a report about your assigned country. Include sections on geography, government, economy, and culture.",stems:["___ is located in\u2026","The economy relies primarily on\u2026","One key feature of the culture is\u2026"],proficiency:{low:"Fill in a structured template with guided sections and word banks",high:"Write an original multi-paragraph report with embedded data and source citations"}},
+"Writing\xD7Explain":{title:"Writing to Explain",classroom:"Students write a lab report explaining why their experiment produced specific results, using causal reasoning.",task:"Write the conclusion section. Explain WHY the plant in sunlight grew more than the one in the dark.",stems:["The data shows that\u2026 because\u2026","This occurred as a result of\u2026","The evidence supports the idea that\u2026"],proficiency:{low:"Use a cause-effect graphic organizer to draft the explanation",high:"Write a detailed explanation connecting results to the scientific concept with precision"}},
+"Writing\xD7Argue":{title:"Writing to Argue",classroom:"Students write a persuasive essay taking a position on a social issue, using text evidence from multiple sources.",task:"Write an argumentative essay: Should the school switch to a four-day week? Use evidence from at least two sources.",stems:["I argue that\u2026 because\u2026","The strongest evidence for this is\u2026","Critics may say\u2026, however\u2026"],proficiency:{low:"Use a claim-evidence-reasoning template to structure the essay",high:"Write a nuanced argument with embedded counterclaims and rhetorical sophistication"}},
+"Interact\xD7Narrate":{title:"Interact to Narrate",classroom:"Partners co-narrate a shared experience or collaboratively retell a story, building on each other\u2019s contributions to create a richer, more detailed account than either could produce alone.",task:"With your partner, retell the story we read yesterday \u2014 but build on each other\u2019s details. One person starts, and the other adds what they remember.",stems:["And then what happened was\u2026","Oh, and don\u2019t forget the part where\u2026","I\u2019d add that the character also\u2026","So putting our versions together\u2026"],proficiency:{low:"Use a picture sequence and take turns describing each image, building on what the partner said",high:"Collaboratively construct an oral retelling that includes interpretation \u2014 why events happened, what characters were thinking"},zwpiersSkills:["Elaborate & Clarify","Build On"],whyInteract:"Solo narration is a monologue. Interactive narration is a dialogue \u2014 students negotiate what\u2019s important, fill in each other\u2019s gaps, and co-construct a version of the story that\u2019s more complete than either could produce individually."},
+"Interact\xD7Inform":{title:"Interact to Inform",classroom:"Students work in pairs to negotiate which information is most important from a set of sources, co-organizing and prioritizing facts through dialogue before creating an informational product.",task:"You and your partner each read a different source about climate change. Through conversation, decide: What are the 3 most important facts? How should we organize them?",stems:["I think the most important fact is\u2026 because\u2026","Should we put this under ___ or ___?","I\u2019d rank that differently because\u2026","So we agree that\u2026"],proficiency:{low:"Sort fact cards together through discussion, physically organizing them into categories",high:"Negotiate a shared organizational framework for a joint presentation, resolving disagreements about emphasis and structure"},zwpiersSkills:["Negotiate Meaning","Support with Evidence"],whyInteract:"Solo informing is reporting. Interactive informing is curation \u2014 students must negotiate what matters, resolve competing priorities, and co-construct an organizational logic through real-time dialogue."},
+"Interact\xD7Explain":{title:"Interact to Explain",classroom:"Partners co-explain a process or concept through dialogue, filling in each other\u2019s understanding gaps and surfacing misconceptions that solo explanation would miss.",task:"Work with your partner to explain how a bill becomes a law. Take turns \u2014 each person explains one step, and the other asks clarifying questions or adds details.",stems:["So first what happens is\u2026","Wait, can you say more about that step?","I think there\u2019s a piece missing between\u2026","Oh right, and then that connects to\u2026"],proficiency:{low:"Use a partially completed flowchart and take turns filling in and explaining steps together",high:"Co-construct a complete causal explanation, identifying where their initial understandings differed and why"},zwpiersSkills:["Elaborate & Clarify","Negotiate Meaning"],whyInteract:"Solo explaining reveals what one student knows. Interactive explaining reveals what two students almost know \u2014 the dialogue surfaces partial understandings, misconceptions, and the gaps between them. It\u2019s where learning actually happens."},
+"Interact\xD7Argue":{title:"Interact to Argue",classroom:"Students engage in structured academic conversation to stress-test arguments before writing \u2014 challenging each other\u2019s claims, weighing evidence together, and refining positions through collaborative reasoning.",task:"Before you write your essay, discuss your argument with a partner. Share your claim and evidence. Your partner\u2019s job: challenge it. Then switch roles.",stems:["My claim is\u2026 and my strongest evidence is\u2026","I see it differently because\u2026","What would you say to someone who argues\u2026?","You\u2019ve convinced me that\u2026, but I still think\u2026"],proficiency:{low:"Use argument cards (claim, evidence, reasoning) and practice challenging one card at a time",high:"Engage in an extended academic conversation where both partners refine their positions in response to each other\u2019s challenges"},zwpiersSkills:["Build On & Challenge","Support with Evidence","Synthesize"],whyInteract:"This is the heart of Zwiers\u2019 5th domain. Written arguments are static \u2014 you make your case and you\u2019re done. Interactive argument is dynamic \u2014 claims get challenged in real time, evidence gets weighed collaboratively, and positions evolve through the conversation itself."}
+};
+
+function App(){
+const[aD,setAD]=useState(4);
+const[aK,setAK]=useState(3);
+const d=DOMAINS[aD],k=KLUS[aK];
+const cell=M[d.name+"\xD7"+k.name];
+const isI=d.name==="Interact";
+const[showP,setShowP]=useState(false);
+
+return React.createElement("div",{style:{padding:"28px 20px"}},
+React.createElement("div",{style:{maxWidth:"900px",margin:"0 auto"}},
+
+// Header
+React.createElement("div",{style:{textAlign:"center",marginBottom:"32px"}},
+React.createElement("p",{style:{fontSize:"10px",fontWeight:800,letterSpacing:"2.5px",color:"#C4880D",textTransform:"uppercase",margin:"0 0 8px"}},"WIDA \xD7 Zwiers Framework"),
+React.createElement("h1",{style:{fontSize:"28px",fontWeight:800,color:"#1a1a2e",margin:"0 0 8px",lineHeight:1.2}},"5 Domains \xD7 4 Key Language Uses"),
+React.createElement("p",{style:{fontSize:"14px",color:"#888",margin:0,lineHeight:1.6,maxWidth:"640px",marginLeft:"auto",marginRight:"auto"}},
+React.createElement("strong",null,"Domains")," are the channels \u2014 ",React.createElement("em",null,"how")," students engage with language. ",
+React.createElement("strong",null,"KLUs")," are the purposes \u2014 ",React.createElement("em",null,"why")," they\u2019re using it. Select a domain and a KLU to explore what that intersection looks like in the classroom."
+)),
+
+// Domain pills
+React.createElement("div",{style:{marginBottom:"8px"}},
+React.createElement("p",{style:{fontSize:"10px",fontWeight:700,letterSpacing:"1.5px",color:"#bbb",textTransform:"uppercase",margin:"0 0 8px 2px"}},"\u2460 Choose the Domain (the channel)"),
+React.createElement("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}},
+DOMAINS.map((dm,i)=>React.createElement("button",{key:dm.name,onClick:()=>setAD(i),style:{
+display:"flex",alignItems:"center",gap:"8px",padding:"10px 16px",
+background:aD===i?dm.color:"#fff",color:aD===i?"#fff":dm.color,
+border:"2px solid "+(aD===i?dm.color:"#e0e0e0"),borderRadius:"12px",
+cursor:"pointer",transition:"all 0.25s",fontSize:"14px",fontWeight:aD===i?800:600,
+boxShadow:aD===i?"0 4px 16px "+dm.color+"30":"none",whiteSpace:"nowrap"
+}},
+React.createElement("span",{style:{fontSize:"18px"}},dm.icon),dm.name,
+dm.isNew&&React.createElement("span",{style:{fontSize:"7px",fontWeight:800,letterSpacing:"1px",background:aD===i?"rgba(255,255,255,0.3)":dm.color,color:"#fff",padding:"2px 6px",borderRadius:"4px"}},"5TH")
+)))),
+
+// Interact callout
+aD===4&&React.createElement("div",{style:{background:"linear-gradient(135deg,#FBF5E6,#fff)",border:"1px solid #C4880D33",borderRadius:"10px",padding:"14px 20px",marginBottom:"8px"}},
+React.createElement("p",{style:{margin:0,fontSize:"13px",color:"#777",lineHeight:1.7}},
+React.createElement("strong",{style:{color:"#C4880D"}},"The 5th Domain: "),"Zwiers argues academic conversation is a distinct mode of language use \u2014 not just Speaking, but the co-construction of meaning through dialogue. Every KLU transforms when it moves through Interact."
+)),
+
+// KLU tabs
+React.createElement("div",{style:{marginTop:"20px"}},
+React.createElement("p",{style:{fontSize:"10px",fontWeight:700,letterSpacing:"1.5px",color:"#bbb",textTransform:"uppercase",margin:"0 0 8px 2px"}},"\u2461 Choose the KLU (the purpose)"),
+React.createElement("div",{style:{display:"flex",gap:"6px"}},
+KLUS.map((kl,i)=>React.createElement("button",{key:kl.name,onClick:()=>{setAK(i);setShowP(false)},style:{
+flex:1,padding:"14px 8px",background:aK===i?"#fff":"#fafafa",
+border:"1px solid #e8e8e8",borderBottom:aK===i?"3px solid "+d.color:"3px solid transparent",
+borderRadius:"10px 10px 0 0",cursor:"pointer",transition:"all 0.2s",textAlign:"center"
+}},
+React.createElement("div",{style:{fontSize:"20px",marginBottom:"2px"}},kl.icon),
+React.createElement("div",{style:{fontSize:"13px",fontWeight:aK===i?800:600,color:aK===i?d.color:"#888"}},kl.name),
+React.createElement("div",{style:{fontSize:"10px",color:"#bbb",fontStyle:"italic"}},kl.tagline)
+)))),
+
+// Detail panel
+cell&&React.createElement("div",{style:{background:"#fff",borderRadius:"0 0 14px 14px",border:"1px solid #e8e8e8",borderTop:"none",padding:"28px"}},
+
+// Pills
+React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"6px"}},
+React.createElement("span",{style:{background:d.color,color:"#fff",padding:"4px 12px",borderRadius:"8px",fontSize:"11px",fontWeight:700}},d.name),
+React.createElement("span",{style:{color:"#ccc",fontSize:"18px"}},"\xD7"),
+React.createElement("span",{style:{background:k.color,color:"#fff",padding:"4px 12px",borderRadius:"8px",fontSize:"11px",fontWeight:700}},k.name)
+),
+
+// Title
+React.createElement("h3",{style:{fontSize:"22px",fontWeight:800,color:"#1a1a2e",margin:"8px 0 16px"}},cell.title),
+
+// Why Interact
+isI&&cell.whyInteract&&React.createElement("div",{style:{background:"linear-gradient(135deg,"+d.lightBg+",#fff)",borderRadius:"12px",padding:"18px 22px",marginBottom:"20px",borderLeft:"4px solid "+d.color}},
+React.createElement("p",{style:{margin:"0 0 6px",fontSize:"10px",fontWeight:800,color:d.color,textTransform:"uppercase",letterSpacing:"1px"}},"Why Interact changes this"),
+React.createElement("p",{style:{margin:0,fontSize:"14px",color:"#444",lineHeight:1.75}},cell.whyInteract)
+),
+
+// Classroom
+React.createElement("div",{style:{marginBottom:"20px"}},
+React.createElement("p",{style:{fontSize:"11px",fontWeight:700,color:"#bbb",textTransform:"uppercase",letterSpacing:"1px",margin:"0 0 8px"}},"Classroom Scenario"),
+React.createElement("p",{style:{fontSize:"14px",color:"#333",lineHeight:1.75,margin:0,background:"#fafafa",padding:"14px 18px",borderRadius:"10px"}},cell.classroom)
+),
+
+// Task
+React.createElement("div",{style:{marginBottom:"20px"}},
+React.createElement("p",{style:{fontSize:"11px",fontWeight:700,color:"#bbb",textTransform:"uppercase",letterSpacing:"1px",margin:"0 0 8px"}},"Sample Task"),
+React.createElement("div",{style:{background:d.lightBg,borderRadius:"10px",padding:"14px 18px",borderLeft:"3px solid "+d.color}},
+React.createElement("p",{style:{margin:0,fontSize:"14px",color:"#333",lineHeight:1.7}},cell.task)
+)),
+
+// Stems
+React.createElement("div",{style:{marginBottom:"20px"}},
+React.createElement("p",{style:{fontSize:"11px",fontWeight:700,color:"#bbb",textTransform:"uppercase",letterSpacing:"1px",margin:"0 0 10px"}},"Language Stems"),
+React.createElement("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}},
+cell.stems.map((s,i)=>React.createElement("span",{key:i,style:{background:"#fff",border:"1px solid "+d.color+"33",padding:"6px 14px",borderRadius:"20px",fontSize:"12px",color:"#555",fontStyle:"italic"}},"\u201C"+s+"\u201D"))
+)),
+
+// Zwiers skills
+isI&&cell.zwpiersSkills&&React.createElement("div",{style:{marginBottom:"20px"}},
+React.createElement("p",{style:{fontSize:"11px",fontWeight:700,color:"#bbb",textTransform:"uppercase",letterSpacing:"1px",margin:"0 0 10px"}},"Zwiers Conversation Skills Used"),
+React.createElement("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}},
+cell.zwpiersSkills.map((s,i)=>React.createElement("span",{key:i,style:{background:d.color,color:"#fff",padding:"5px 14px",borderRadius:"20px",fontSize:"12px",fontWeight:600}},s))
+)),
+
+// Proficiency
+React.createElement("div",null,
+React.createElement("button",{onClick:()=>setShowP(!showP),style:{background:"none",border:"none",cursor:"pointer",padding:0,fontSize:"11px",fontWeight:700,color:d.color,textTransform:"uppercase",letterSpacing:"1px",display:"flex",alignItems:"center",gap:"6px"}},(showP?"\u25BE":"\u25B8")+" Proficiency Differentiation"),
+showP&&React.createElement("div",{style:{display:"flex",gap:"12px",marginTop:"12px",flexWrap:"wrap"}},
+React.createElement("div",{style:{flex:1,minWidth:"250px",background:"#f8f9fc",borderRadius:"10px",padding:"14px 18px"}},
+React.createElement("p",{style:{margin:"0 0 6px",fontSize:"10px",fontWeight:800,color:"#aaa",textTransform:"uppercase",letterSpacing:"1px"}},"PL 1\u20132 (Entering/Emerging)"),
+React.createElement("p",{style:{margin:0,fontSize:"13px",color:"#555",lineHeight:1.6}},cell.proficiency.low)
+),
+React.createElement("div",{style:{flex:1,minWidth:"250px",background:"#f8f9fc",borderRadius:"10px",padding:"14px 18px"}},
+React.createElement("p",{style:{margin:"0 0 6px",fontSize:"10px",fontWeight:800,color:"#aaa",textTransform:"uppercase",letterSpacing:"1px"}},"PL 4\u20135 (Expanding/Bridging)"),
+React.createElement("p",{style:{margin:0,fontSize:"13px",color:"#555",lineHeight:1.6}},cell.proficiency.high)
+))
+)),
+
+// Matrix
+React.createElement("div",{style:{marginTop:"28px",background:"#fff",borderRadius:"14px",padding:"20px 24px",border:"1px solid #e8e8ec"}},
+React.createElement("p",{style:{fontSize:"11px",fontWeight:800,letterSpacing:"1px",color:"#aaa",textTransform:"uppercase",margin:"0 0 14px"}},"The Full 5\xD74 Matrix"),
+React.createElement("div",{style:{overflowX:"auto"}},
+React.createElement("table",{style:{width:"100%",borderCollapse:"collapse"}},
+React.createElement("thead",null,React.createElement("tr",null,
+React.createElement("th",{style:{padding:"8px",fontSize:"11px",color:"#aaa",textAlign:"left",borderBottom:"2px solid #eee"}},""),
+KLUS.map(kl=>React.createElement("th",{key:kl.name,style:{padding:"8px",fontSize:"12px",fontWeight:700,color:kl.color,textAlign:"center",borderBottom:"2px solid #eee"}},kl.icon+" "+kl.name))
+)),
+React.createElement("tbody",null,
+DOMAINS.map((dm,di)=>React.createElement("tr",{key:dm.name},
+React.createElement("td",{style:{padding:"8px 10px",fontSize:"12px",fontWeight:700,color:dm.color,whiteSpace:"nowrap",borderBottom:"1px solid #f0f0f0",background:dm.isNew?dm.lightBg:"transparent"}},dm.icon+" "+dm.name,dm.isNew&&React.createElement("span",{style:{fontSize:"8px",marginLeft:"4px",opacity:0.7}},"\u2605")),
+KLUS.map((kl,ki)=>{const sel=aD===di&&aK===ki;return React.createElement("td",{key:kl.name,onClick:()=>{setAD(di);setAK(ki);setShowP(false);window.scrollTo({top:300,behavior:"smooth"})},style:{padding:"8px",textAlign:"center",borderBottom:"1px solid #f0f0f0",background:sel?dm.color:(dm.isNew?dm.lightBg:"transparent"),cursor:"pointer",borderRadius:"6px",transition:"all 0.2s"}},
+React.createElement("span",{style:{fontSize:"14px",filter:sel?"brightness(10)":"none",opacity:sel?1:0.5}},sel?"\u25CF":"\u25CB"))})
+))))),
+React.createElement("p",{style:{margin:"12px 0 0",fontSize:"11px",color:"#bbb",fontStyle:"italic",textAlign:"center"}},"Click any cell to explore that Domain \xD7 KLU intersection")
+),
+
+// Surfing metaphor
+React.createElement("div",{style:{marginTop:"20px",padding:"18px 24px",background:"#fff",borderRadius:"14px",border:"1px solid #e8e8ec"}},
+React.createElement("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px"}},
+React.createElement("span",{style:{fontSize:"14px"}},"\u{1F3C4}"),
+React.createElement("span",{style:{fontSize:"11px",fontWeight:800,color:"#C4880D",textTransform:"uppercase",letterSpacing:"1px"}},"The Surfing Metaphor")
+),
+React.createElement("p",{style:{margin:0,fontSize:"13px",color:"#666",lineHeight:1.75,fontStyle:"italic"}},
+"Listening, Speaking, Reading, and Writing are like surfing different breaks \u2014 each has its own character and challenge. ",
+React.createElement("strong",{style:{color:"#C4880D",fontStyle:"normal"}},"Interact"),
+" is the current that connects them all underneath. The KLUs \u2014 Narrate, Inform, Explain, Argue \u2014 are the kinds of waves you\u2019re riding. The magic happens when you realize every wave (KLU) feels different depending on which break (Domain) you\u2019re surfing it at. And the current of Interact is always there, shaping the swell."
+)),
+
+React.createElement("p",{style:{textAlign:"center",fontSize:"11px",color:"#ccc",marginTop:"16px"}},"Framework: WIDA ELD Standards (2020) \xD7 Zwiers\u2019 Academic Conversations")
+));
+}
+
+ReactDOM.render(React.createElement(App),document.getElementById("root"));
+</script>
+
+</body>
+</html>

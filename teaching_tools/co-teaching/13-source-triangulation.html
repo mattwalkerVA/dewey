@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Source Triangulation Matrix</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #fff; padding: 30px 20px; color: #222; }
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn { padding: 8px 24px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .page { max-width: 760px; margin: 0 auto; }
+  .title { text-align: center; font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 16px; }
+  .meta-line { display: flex; gap: 24px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
+  .meta-field { font-size: 11px; font-weight: 600; color: #555; }
+  .meta-blank { display: inline-block; width: 220px; border-bottom: 1px solid #999; margin-left: 5px; }
+  .question { border: 2px solid #c45d3e; padding: 10px 14px; margin-bottom: 14px; }
+  .question-label { font-size: 10px; font-weight: 800; color: #c45d3e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .question-lines { background-image: linear-gradient(to bottom, transparent 18px, #ccc 18px, #ccc 19px, transparent 19px); background-size: 100% 19px; min-height: 40px; }
+  table { width: 100%; border-collapse: collapse; border: 2px solid #333; }
+  th { background: #1a1a2e; color: #fff; padding: 8px 10px; font-size: 11px; font-weight: 800; text-align: left; letter-spacing: 0.3px; }
+  td { border: 1px solid #333; padding: 9px 10px; font-size: 10.5px; line-height: 1.5; vertical-align: top; }
+  td.dim { width: 18%; font-weight: 700; background: #faf8f4; }
+  td.src { min-height: 50px; }
+  td.empty { height: 50px; }
+  .frames { font-size: 10px; color: #555; font-style: italic; margin-top: 4px; }
+  .conclude { border: 2px solid #6b8f71; padding: 10px 14px; margin-top: 14px; }
+  .conclude-label { font-size: 10px; font-weight: 800; color: #6b8f71; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .conclude-lines { background-image: linear-gradient(to bottom, transparent 18px, #ccc 18px, #ccc 19px, transparent 19px); background-size: 100% 19px; min-height: 60px; }
+  @media print { body { padding: 0.3in; } .screen-only { display: none; } }
+  @page { margin: 0.35in; size: portrait; }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <h1>Source Triangulation Matrix</h1>
+  <p>Corroborate three sources &mdash; with sentence frames built in</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="page">
+  <div class="title">Source Triangulation Matrix</div>
+  <div class="sub">Read across rows. Compare. Build a claim that holds up across three voices.</div>
+  <div class="meta-line">
+    <div class="meta-field">Name: <span class="meta-blank"></span></div>
+    <div class="meta-field">Topic: <span class="meta-blank"></span></div>
+  </div>
+  <div class="question">
+    <div class="question-label">Inquiry question</div>
+    <div class="question-lines"></div>
+  </div>
+  <table>
+    <thead><tr><th></th><th>Source A</th><th>Source B</th><th>Source C</th></tr></thead>
+    <tbody>
+      <tr><td class="dim">Who made it?<div class="frames">Source A is&hellip;</div></td><td class="src empty"></td><td class="src empty"></td><td class="src empty"></td></tr>
+      <tr><td class="dim">When &amp; why?<div class="frames">It was made in ___ to&hellip;</div></td><td class="src empty"></td><td class="src empty"></td><td class="src empty"></td></tr>
+      <tr><td class="dim">What does it claim?<div class="frames">The source argues that&hellip;</div></td><td class="src empty"></td><td class="src empty"></td><td class="src empty"></td></tr>
+      <tr><td class="dim">What's missing?<div class="frames">It does not mention&hellip;</div></td><td class="src empty"></td><td class="src empty"></td><td class="src empty"></td></tr>
+      <tr><td class="dim">Trust level (1&ndash;5)<div class="frames">I trust this because&hellip;</div></td><td class="src empty"></td><td class="src empty"></td><td class="src empty"></td></tr>
+    </tbody>
+  </table>
+  <div class="conclude">
+    <div class="conclude-label">My corroborated claim &mdash; "Across these three sources&hellip;"</div>
+    <div class="conclude-lines"></div>
+  </div>
+</div>
+</body>
+</html>

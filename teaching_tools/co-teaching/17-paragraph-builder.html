@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color-Coded Paragraph Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #fff; padding: 30px 20px; color: #222; }
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn { padding: 8px 24px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .page { max-width: 720px; margin: 0 auto; }
+  .title { text-align: center; font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 16px; }
+  .meta-line { display: flex; gap: 24px; margin-bottom: 14px; justify-content: center; }
+  .meta-field { font-size: 11px; font-weight: 600; color: #555; }
+  .meta-blank { display: inline-block; width: 200px; border-bottom: 1px solid #999; margin-left: 5px; }
+  .key { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
+  .key-cell { padding: 6px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-align: center; }
+  .key-cell.claim { background: #5B8DBE; color: #fff; }
+  .key-cell.evid { background: #6b8f71; color: #fff; }
+  .key-cell.expl { background: #c08b30; color: #fff; }
+  .key-cell.link { background: #c45d3e; color: #fff; }
+  .block { border: 2px solid #333; margin-bottom: 10px; }
+  .block-head { padding: 6px 12px; font-size: 10px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+  .block-head.claim { background: #5B8DBE; }
+  .block-head.evid { background: #6b8f71; }
+  .block-head.expl { background: #c08b30; }
+  .block-head.link { background: #c45d3e; }
+  .frame { font-size: 10px; font-style: italic; opacity: 0.85; }
+  .block-lines { background-image: linear-gradient(to bottom, transparent 22px, #ccc 22px, #ccc 23px, transparent 23px); background-size: 100% 23px; min-height: 70px; padding: 10px 14px; line-height: 23px; font-size: 12px; }
+  .block-lines.tall { min-height: 95px; }
+  .checklist { border: 2px dashed #333; padding: 10px 14px; margin-top: 12px; }
+  .checklist-label { font-size: 10px; font-weight: 800; color: #1a1a2e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .check { font-size: 11px; line-height: 1.7; }
+  .check::before { content: "\2610"; margin-right: 6px; }
+  @media print { body { padding: 0.3in; } .screen-only { display: none; } }
+  @page { margin: 0.35in; size: portrait; }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <h1>Color-Coded Paragraph Builder</h1>
+  <p>Claim &middot; Evidence &middot; Explanation &middot; Link</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="page">
+  <div class="title">Color-Coded Paragraph Builder</div>
+  <div class="sub">Build the paragraph in colored blocks. Then write it as one paragraph.</div>
+  <div class="meta-line">
+    <div class="meta-field">Name: <span class="meta-blank"></span></div>
+    <div class="meta-field">Prompt: <span class="meta-blank"></span></div>
+  </div>
+  <div class="key">
+    <div class="key-cell claim">CLAIM</div>
+    <div class="key-cell evid">EVIDENCE</div>
+    <div class="key-cell expl">EXPLANATION</div>
+    <div class="key-cell link">LINK</div>
+  </div>
+
+  <div class="block">
+    <div class="block-head claim"><span>Claim</span><span class="frame">"I argue that ___."</span></div>
+    <div class="block-lines"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-head evid"><span>Evidence</span><span class="frame">"The source / text shows ___."</span></div>
+    <div class="block-lines tall"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-head expl"><span>Explanation</span><span class="frame">"This proves my claim because ___."</span></div>
+    <div class="block-lines tall"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-head link"><span>Link</span><span class="frame">"This matters because ___."</span></div>
+    <div class="block-lines"></div>
+  </div>
+
+  <div class="checklist">
+    <div class="checklist-label">Before I turn it in</div>
+    <div class="check">My claim answers the prompt directly.</div>
+    <div class="check">My evidence is quoted or specific.</div>
+    <div class="check">My explanation connects evidence to claim.</div>
+    <div class="check">I used at least one transition word.</div>
+  </div>
+</div>
+</body>
+</html>

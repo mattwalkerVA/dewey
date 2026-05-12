@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overhauling Learning for Multilingual Students — Annotated Outline</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1612;
+  --warm-white: #faf6f0;
+  --cream: #f2ebe0;
+  --sand: #e6ddd0;
+  --terracotta: #c45d3e;
+  --terracotta-light: #e8886d;
+  --deep-teal: #2a6b6b;
+  --muted-gold: #b8963e;
+  --soft-purple: #8b6fa0;
+  --slate: #5a5550;
+  --light-slate: #8a8480;
+  --blue-ink: #3a5a7c;
+  --pink-accent: #d4728c;
+  --forest: #3a6b4a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; font-size: 17px; }
+
+body {
+  font-family: 'Source Sans 3', Georgia, serif;
+  background: var(--warm-white);
+  color: var(--ink);
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(165deg, #0f1a14 0%, #1a2e22 40%, #243828 70%, #1a2a1e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(184, 150, 62, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 60% at 80% 60%, rgba(42, 107, 107, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to top, var(--warm-white), transparent);
+  pointer-events: none;
+}
+
+.hero-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted-gold);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 0.2s;
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+  font-weight: 900;
+  color: var(--warm-white);
+  line-height: 1.15;
+  max-width: 750px;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 0.4s;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--muted-gold);
+}
+
+.hero-subtitle {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1.15rem;
+  color: #a0b0a4;
+  font-weight: 300;
+  max-width: 520px;
+  margin-bottom: 0.6rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 0.6s;
+}
+
+.hero-author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #6a7a6e;
+  letter-spacing: 0.15em;
+  margin-top: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 0.8s;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== NAV SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 280px;
+  height: 100vh;
+  background: var(--ink);
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+.sidebar.open { transform: translateX(0); }
+
+.sidebar-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: none;
+  color: #8a8480; font-size: 1.5rem; cursor: pointer;
+  transition: color 0.2s;
+}
+.sidebar-close:hover { color: var(--warm-white); }
+
+.sidebar h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--muted-gold);
+  margin-bottom: 1.5rem; margin-top: 2rem;
+}
+
+.sidebar a {
+  display: block; color: #b0a89a; text-decoration: none;
+  font-size: 0.85rem; padding: 0.4rem 0;
+  transition: color 0.2s, padding-left 0.2s;
+  border-left: 2px solid transparent; padding-left: 0.8rem;
+}
+.sidebar a:hover {
+  color: var(--warm-white);
+  border-left-color: var(--forest);
+  padding-left: 1.2rem;
+}
+
+.sidebar-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(26, 22, 18, 0.6);
+  z-index: 999; opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+}
+.sidebar-overlay.visible { opacity: 1; pointer-events: all; }
+
+/* ===== FLOATING NAV ===== */
+.nav-toggle {
+  position: fixed; top: 1.2rem; left: 1.2rem; z-index: 998;
+  background: var(--ink); border: none; color: var(--warm-white);
+  width: 44px; height: 44px; border-radius: 50%;
+  font-size: 1.1rem; cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s, background 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-toggle:hover { transform: scale(1.1); background: var(--forest); }
+.nav-toggle.hidden { opacity: 0; pointer-events: none; }
+
+/* ===== MAIN CONTENT ===== */
+.content { max-width: 780px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+/* ===== CHAPTERS ===== */
+.chapter { margin-bottom: 4rem; padding-top: 2rem; }
+
+.chapter-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.35em;
+  text-transform: uppercase; color: var(--forest);
+  margin-bottom: 0.5rem;
+}
+
+.chapter h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 900; line-height: 1.2;
+  margin-bottom: 1.5rem; color: var(--ink);
+}
+
+.chapter h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem; font-weight: 700;
+  margin: 2.5rem 0 0.8rem; color: var(--ink);
+}
+
+.chapter h4 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1.05rem; font-weight: 700;
+  margin: 1.8rem 0 0.5rem; color: var(--deep-teal);
+  letter-spacing: 0.02em;
+}
+
+.chapter p { margin-bottom: 1rem; color: #3a3530; }
+.chapter strong { color: var(--ink); }
+.chapter em { color: var(--slate); }
+
+/* ===== CALLOUTS ===== */
+.callout {
+  background: var(--cream);
+  border-left: 3px solid var(--forest);
+  padding: 1.2rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom: 0.5rem; color: var(--slate); font-size: 0.95rem; }
+.callout p:last-child { margin-bottom: 0; }
+
+.callout-teal { border-left-color: var(--deep-teal); background: #f0f5f5; }
+.callout-gold { border-left-color: var(--muted-gold); background: #faf5ea; }
+.callout-terra { border-left-color: var(--terracotta); background: #fdf3f0; }
+
+/* ===== DIMENSION CARDS ===== */
+.dim-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.dim-card {
+  background: white;
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.dim-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
+}
+
+.dim-card:nth-child(1)::before { background: var(--terracotta); }
+.dim-card:nth-child(2)::before { background: var(--muted-gold); }
+.dim-card:nth-child(3)::before { background: var(--deep-teal); }
+.dim-card:nth-child(4)::before { background: var(--forest); }
+.dim-card:nth-child(5)::before { background: var(--blue-ink); }
+.dim-card:nth-child(6)::before { background: var(--soft-purple); }
+
+.dim-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.dim-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; font-weight: 900;
+  line-height: 1; margin-bottom: 0.3rem;
+}
+
+.dim-card:nth-child(1) .dim-num { color: var(--terracotta); }
+.dim-card:nth-child(2) .dim-num { color: var(--muted-gold); }
+.dim-card:nth-child(3) .dim-num { color: var(--deep-teal); }
+.dim-card:nth-child(4) .dim-num { color: var(--forest); }
+.dim-card:nth-child(5) .dim-num { color: var(--blue-ink); }
+.dim-card:nth-child(6) .dim-num { color: var(--soft-purple); }
+
+.dim-card h5 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  margin-bottom: 0.4rem; color: var(--ink);
+}
+
+.dim-card p {
+  font-size: 0.9rem; color: var(--slate); line-height: 1.6;
+}
+
+/* ===== ELEMENT CARDS (10 Elements) ===== */
+.element-card {
+  background: white;
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin: 0.8rem 0;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.element-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+}
+
+.element-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem; font-weight: 900;
+  color: var(--forest); line-height: 1;
+  min-width: 32px; padding-top: 0.15rem;
+}
+
+.element-body h5 {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--ink); margin-bottom: 0.3rem;
+}
+
+.element-body p {
+  font-size: 0.88rem; color: var(--slate); line-height: 1.6; margin: 0;
+}
+
+/* ===== TAGS ===== */
+.tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  margin-bottom: 0.5rem;
+}
+.tag-green { background: var(--forest); color: white; }
+.tag-gold { background: var(--muted-gold); color: white; }
+.tag-teal { background: var(--deep-teal); color: white; }
+
+.use-tag {
+  display: inline-block;
+  background: rgba(184, 150, 62, 0.2);
+  color: var(--muted-gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem; border-radius: 4px; margin-top: 0.8rem;
+}
+
+/* ===== VOCAB TABLE ===== */
+.vocab-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  margin: 1.5rem 0; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--sand);
+}
+.vocab-table thead th {
+  background: var(--ink); color: var(--warm-white);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 0.15em;
+  text-transform: uppercase; padding: 0.8rem 1.2rem; text-align: left;
+}
+.vocab-table tbody td {
+  padding: 0.8rem 1.2rem; font-size: 0.9rem;
+  border-bottom: 1px solid var(--sand); vertical-align: top;
+}
+.vocab-table tbody tr:last-child td { border-bottom: none; }
+.vocab-table tbody tr:nth-child(even) { background: var(--cream); }
+.vocab-table td:first-child {
+  font-weight: 700; color: var(--deep-teal); white-space: nowrap; width: 220px;
+}
+
+/* ===== LISTS ===== */
+.chapter ul, .chapter ol { margin: 0.8rem 0 1.2rem 1.5rem; color: #3a3530; }
+.chapter li { margin-bottom: 0.5rem; padding-left: 0.3rem; }
+
+/* ===== DIVIDER ===== */
+.divider {
+  border: none; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sand), transparent);
+  margin: 3rem 0;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center; padding: 3rem 2rem;
+  background: var(--cream); font-size: 0.85rem; color: var(--light-slate);
+}
+.footer em { color: var(--slate); }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: linear-gradient(90deg, var(--forest), var(--muted-gold));
+  z-index: 9999; width: 0%; transition: width 0.1s;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  html { font-size: 15px; }
+  .content { padding: 2.5rem 1.2rem 4rem; }
+  .vocab-table td:first-child { white-space: normal; width: auto; }
+  .element-card { flex-direction: column; gap: 0.4rem; }
+}
+
+/* ===== PRINT ===== */
+@media print {
+  .hero { min-height: auto; padding: 2rem; background: white !important; }
+  .hero h1, .hero-subtitle, .hero-label, .hero-author { color: black !important; }
+  .sidebar, .sidebar-overlay, .nav-toggle, .progress-bar { display: none !important; }
+  .content { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="nav-toggle hidden" id="navToggle" aria-label="Open navigation">☰</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar" id="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close navigation">✕</button>
+  <h3>Chapters</h3>
+  <a href="#intro">Introduction</a>
+  <a href="#ch1">Ch 1 — Pedagogical Justice</a>
+  <a href="#ch2">Ch 2 — Growth</a>
+  <a href="#ch3">Ch 3 — Assessment</a>
+  <a href="#ch4">Ch 4 — The Idea-Building Approach</a>
+  <a href="#ch5">Ch 5 — Instruction</a>
+  <a href="#ch6">Ch 6 — The System</a>
+  <h3>Reference</h3>
+  <a href="#vocab">Key Terms</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-label">Annotated Outline</div>
+  <h1>Overhauling Learning for <em>Multilingual Students</em></h1>
+  <p class="hero-subtitle">An Approach for Achieving Pedagogical Justice</p>
+  <div class="hero-author">Jeff Zwiers · 2024 · Corwin</div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+  <!-- CORE FRAMEWORK -->
+  <section class="chapter" id="framework">
+    <div class="chapter-label">Core Framework</div>
+    <h2>The Book's Central Argument</h2>
+    <div class="callout callout-terra">
+      <p><strong>The problem:</strong> Most U.S. schools operate on an <strong>accumulation-based learning</strong> model that is deeply unjust to multilingual students. The proposed solution is an <strong>Idea-Building Approach</strong> rooted in <strong>Pedagogical Justice</strong>. True reform requires overhauling five interconnected areas: growth, assessment, pedagogy, instruction, and the school system.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- INTRODUCTION -->
+  <section class="chapter" id="intro">
+    <div class="chapter-label">Introduction</div>
+    <h2>The Problem with Accumulation-Based Learning</h2>
+    <p><strong>What it is:</strong> Students memorize disconnected facts and skills to be tested on them, then "forget the stuff." Learning is measured by test scores on multiple-choice assessments.</p>
+
+    <h3>Why It Fails Multilingual Students</h3>
+    <ul>
+      <li>Tests are culturally and linguistically biased toward middle-class monolingual English speakers</li>
+      <li>Multilingual students are evaluated on language form (English correctness) rather than conceptual strength</li>
+      <li>Their background knowledge, home languages, and cultural experiences are ignored rather than treated as assets</li>
+      <li>They are sorted into remedial or sheltered tracks, limiting access to rigorous content</li>
+      <li>They are trained to be passive "recipients" of knowledge rather than active idea-builders</li>
+    </ul>
+
+    <div class="callout callout-gold">
+      <p><strong>The alternative:</strong> Move from a "fill the bucket" model to a "build the idea" model — students construct, argue for, and communicate their own lasting ideas across disciplines.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 1 -->
+  <section class="chapter" id="ch1">
+    <div class="chapter-label">Chapter 1</div>
+    <h2>Pedagogical Justice</h2>
+
+    <p><strong>Definition:</strong> Pedagogical Justice means that ALL students, regardless of language, background, or culture, have the right to an education that develops their full intellectual, social, and personal potential.</p>
+
+    <h3>The 6 Dimensions of Pedagogical Justice</h3>
+    <div class="dim-grid">
+      <div class="dim-card">
+        <div class="dim-num">1</div>
+        <h5>Agency and Voice</h5>
+        <p>Students have meaningful choices, ownership of their learning, and opportunities to express their perspectives and ideas. Accumulation-based learning suppresses agency — students just answer what the teacher asks for points.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">2</div>
+        <h5>Engaging Challenges</h5>
+        <p>All students deserve intellectually stimulating, complex, and interesting tasks — not watered-down worksheets. Multilingual students are often given the least engaging work.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">3</div>
+        <h5>Meaningful Interactions</h5>
+        <p>Students need real, substantive conversations that build ideas, not just quick pair-shares for compliance. Rich dialogue is critical for language and concept development.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">4</div>
+        <h5>Idea-Building</h5>
+        <p>Students should be building lasting concepts and understandings, not memorizing temporary information for tests.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">5</div>
+        <h5>Assessment for Learning</h5>
+        <p>Assessment should support idea-building and growth, not just grade performance on tests.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">6</div>
+        <h5>Critical and Creative Thinking</h5>
+        <p>All students should engage in higher-order thinking: analyzing, evaluating, creating, and arguing.</p>
+      </div>
+    </div>
+
+    <h3>The 5 Root Causes of Pedagogical Injustice</h3>
+    <ol>
+      <li>Accumulation-based learning as the dominant paradigm</li>
+      <li>Lack of trust in students (especially multilingual/non-dominant students)</li>
+      <li>Focus on deficits rather than assets</li>
+      <li>Overemphasis on test scores as the measure of learning</li>
+      <li>Cultural and linguistic mismatch between school and students' lives</li>
+    </ol>
+
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 2 -->
+  <section class="chapter" id="ch2">
+    <div class="chapter-label">Chapter 2</div>
+    <h2>Growth</h2>
+
+    <p><strong>Core Idea:</strong> Schools focus too narrowly on "academic achievement" (test scores). Real education should foster holistic student growth in five interconnected areas.</p>
+
+    <h3>The 5 Areas of Personal Growth</h3>
+    <div class="dim-grid">
+      <div class="dim-card">
+        <div class="dim-num">1</div>
+        <h5>Self-Perception</h5>
+        <p>Agency, self-efficacy, academic identity, and confidence. Do students believe they are capable thinkers and communicators? Multilingual students often internalize deficit messages from the system.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">2</div>
+        <h5>Perseverance</h5>
+        <p>Resilience, grit, learning from mistakes, responding to constructive feedback. Being able to stay with hard tasks and revise work.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">3</div>
+        <h5>Social Skills</h5>
+        <p>Empathy, perspective-taking, collaboration, and the ability to work with diverse others. Highly valued by employers but rarely assessed in school.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">4</div>
+        <h5>Character Traits</h5>
+        <p>Honesty, generosity, open-mindedness, integrity, patience. Schools can and should nurture these explicitly.</p>
+      </div>
+      <div class="dim-card">
+        <div class="dim-num">5</div>
+        <h5>Multilingual &amp; Multicultural Identities</h5>
+        <p>Valuing and developing students' full linguistic and cultural selves. Being multilingual and multicultural is an asset, not a deficit.</p>
+      </div>
+    </div>
+
+    <h3>The Idea-Building Skills (Academic Growth)</h3>
+    <ul>
+      <li><strong>Clarifying</strong> — Defining terms, explaining ideas, unpacking complexity</li>
+      <li><strong>Supporting</strong> — Using evidence, examples, data, and reasoning to back up ideas</li>
+      <li><strong>Evaluating</strong> — Judging quality, strength, and validity of ideas and sources</li>
+      <li><strong>Analyzing</strong> — Breaking down ideas, identifying patterns, causes, and effects</li>
+      <li><strong>Arguing/Deciding</strong> — Constructing well-reasoned arguments and making defensible decisions</li>
+    </ul>
+
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 3 -->
+  <section class="chapter" id="ch3">
+    <div class="chapter-label">Chapter 3</div>
+    <h2>Assessment</h2>
+
+    <p><strong>Core Argument:</strong> Most assessment is accumulation-based — it measures how much students have memorized, not how well they are building ideas and growing. We must overhaul assessment to be "for learning" rather than "of learning."</p>
+
+    <h3>Problems with Traditional Assessment</h3>
+    <ul>
+      <li>Focuses on point-earning rather than learning</li>
+      <li>Biased toward language form (correct English) over conceptual strength</li>
+      <li>Culturally disconnected from many students' ways of demonstrating knowledge</li>
+      <li>Creates anxiety rather than investment</li>
+      <li>Often reduces complex thinking to right/wrong answers</li>
+    </ul>
+
+    <h3>Features of Assessment FOR Learning</h3>
+    <ul>
+      <li><strong>Idea-based, non-test assessments</strong> — products, performances, projects, presentations that require students to build and communicate an idea</li>
+      <li><strong>Authentic audience</strong> — Students present ideas to real audiences who don't already have the information, filling genuine information gaps</li>
+      <li><strong>Student choice</strong> — Students have some say in how they demonstrate learning</li>
+      <li><strong>Multiple chances to submit</strong> — Revision and multiple attempts are supported, not punished</li>
+      <li><strong>Self-evaluation</strong> — Students regularly rate the clarity and strength of their own ideas</li>
+      <li><strong>Values cultural and linguistic assets</strong> — Students can use home language, movement, art, and community examples</li>
+      <li><strong>Fosters growth</strong> — The assessment process itself should be a positive educational experience</li>
+    </ul>
+
+    <h3>Types of Assessment for Learning</h3>
+    <ul>
+      <li>Learning interviews (teacher has one-on-one or small-group conversations)</li>
+      <li>Products and performances (science posters, oral presentations, graphic novels, art, podcasts)</li>
+      <li>Collaborative assessments (group projects with individual accountability)</li>
+      <li>Self-assessments and peer assessments</li>
+      <li>Observation of student-to-student dialogue</li>
+    </ul>
+
+    <h3>Assessment for Personal Growth</h3>
+    <p>Track growth in the 5 areas from Chapter 2 using observation notes, student surveys and self-rating tools, idea-building visuals (semantic maps students keep over time), and growth-area interviews.</p>
+
+    <div class="callout callout-gold">
+      <p><strong>Idea Statement:</strong> <em>Assessment for learning focuses on seeing students' strengths and next steps in the development of knowledge, language, and skills needed for building and communicating big ideas.</em></p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 4 -->
+  <section class="chapter" id="ch4">
+    <div class="chapter-label">Chapter 4 · Pedagogy</div>
+    <h2>The Idea-Building Approach</h2>
+
+    <p><strong>Core Argument:</strong> Pedagogy — how we fundamentally believe learning works and what our role as teachers is — is the most important transformation. The Idea-Building Approach replaces accumulation pedagogy.</p>
+
+    <h3>The 10 Elements of the Idea-Building Approach</h3>
+
+    <div class="element-card">
+      <div class="element-num">1</div>
+      <div class="element-body">
+        <h5>Outline the Results</h5>
+        <p>Clearly define what students will learn (content ideas) and how they will grow (personal development). Set high, clear expectations tied to building ideas, not just completing tasks.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">2</div>
+      <div class="element-body">
+        <h5>Draft the Big-Idea Statement(s)</h5>
+        <p>Develop 1–2 lasting ideas students build toward throughout the unit. These are concepts or claims, not just topics. They should be valuable, clarifiable, and buildable. Example: <em>"We have rights and responsibilities to others."</em></p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">3</div>
+      <div class="element-body">
+        <h5>Design Products and Performances</h5>
+        <p>Create authentic, engaging end-tasks that require students to communicate their big idea to a real audience. Students should have creative choice. The stakes are real — they communicate to others who don't already have the information.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">4</div>
+      <div class="element-body">
+        <h5>Know Your Students</h5>
+        <p>Gather detailed knowledge of students' strengths, interests, home languages, learning preferences, cultural backgrounds, family situations, and prior ideas. This is pedagogically essential, not optional.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">5</div>
+      <div class="element-body">
+        <h5>Use Building Blocks (School and Personal)</h5>
+        <p>Content knowledge and skills are "building blocks" for the idea. Personal building blocks from students' home lives and cultures are equally valid and valuable.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">6</div>
+      <div class="element-body">
+        <h5>Fill Information Gaps</h5>
+        <p>Language is invented to fill information gaps. If students already know what their partner knows, there is no genuine communicative purpose. Design activities so students genuinely need each other's information.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">7</div>
+      <div class="element-body">
+        <h5>Motivate</h5>
+        <p>Use intrigue (unknowns, mysteries), narrativity (story elements), real-world problems, choice, and collaboration. 8 types of motivation: interest, arguing/deciding, solving problems, collaborating, creating products, using personal building blocks, finding endings (intrigue), and inquiry.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">8</div>
+      <div class="element-body">
+        <h5>Model and Scaffold</h5>
+        <p>Model the expert thinking processes — not just the final product. Scaffolds should be removed over time so students develop independence.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">9</div>
+      <div class="element-body">
+        <h5>Collaborate</h5>
+        <p>Design rich dialogue-heavy lessons. Dialogue is not just talking — it is the productive back-and-forth construction of shared meaning. Collaboration also builds relationships and reduces isolation.</p>
+      </div>
+    </div>
+
+    <div class="element-card">
+      <div class="element-num">10</div>
+      <div class="element-body">
+        <h5>Develop Language</h5>
+        <p>Language grows through purposeful, motivated use in authentic contexts — not through grammar drills. Prioritize clarity over correctness. Use translanguaging — allow and encourage students' home languages.</p>
+      </div>
+    </div>
+
+    <h3>Additional Principles</h3>
+    <ul>
+      <li><strong>Cultivating Students' Cultures and Languages:</strong> Authentically value and use student assets — not just "lip service." Use cultural examples as building blocks.</li>
+      <li><strong>Authentic Communication:</strong> Communication is not just the vehicle for learning — it is the very object of learning. Students gather building blocks and then share new ideas by filling information gaps.</li>
+    </ul>
+
+    <div class="callout">
+      <p><strong>Idea Statement:</strong> <em>Idea-building, like a healthy tree, will produce deeper roots and more fruit — and it will take time.</em></p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 5 -->
+  <section class="chapter" id="ch5">
+    <div class="chapter-label">Chapter 5 · Instruction</div>
+    <h2>Applying the Framework</h2>
+
+    <p><strong>Core Argument:</strong> Pedagogy (Chapter 4) must be applied at three levels: curriculum, unit, and lesson. This chapter gives practical tools for overhauling instruction at all three levels.</p>
+
+    <h3>Overhauling Curriculums</h3>
+    <p>Most curricula are accumulation-based: they cover too many standards superficially, focus on quizzes and tests, treat multilingual students as an afterthought, and don't allow for authentic building. Use the <strong>Curriculum Overhaul Tool</strong> to analyze your curriculum across dimensions of big picture, assessment, and organization.</p>
+
+    <h3>Overhauling Units</h3>
+    <ol>
+      <li><strong>Objectives</strong> — Identify or create the big idea/claim from standards. What lasting idea should students build and argue for?</li>
+      <li><strong>Assessment</strong> — Make the end product/performance meaningful and idea-communicating</li>
+      <li><strong>Building Blocks</strong> — List content and personal building blocks students will need</li>
+      <li><strong>Organization</strong> — Sequence: first lessons hook and connect; middle lessons gather and process new blocks; final lessons synthesize and communicate</li>
+    </ol>
+
+    <h3>Overhauling Lessons — Two Types</h3>
+
+    <h4><span class="tag tag-green">Type A</span> Idea-Building Lessons</h4>
+    <p><strong>Prepping → Gathering → Processing</strong></p>
+    <ul>
+      <li><strong>Prepping:</strong> Clarifying expectations, attention focusers (videos, demos, mysteries), connections and reviews, pre-assessing, teacher modeling, providing background knowledge and language</li>
+      <li><strong>Gathering:</strong> Experiences (labs, simulations, games, drama, field trips), fieldwork and service, case studies, collaboration, nonwritten texts (videos, podcasts, images, songs), technology/AI (as a tool, not a replacement), written texts (articles, stories, primary sources)</li>
+      <li><strong>Processing:</strong> Movement, hands-on and sensory experiences, story-fy (turn processes into narratives), visuals, projects, collaborative processing, music/chants, writing in own words</li>
+    </ul>
+
+    <h4><span class="tag tag-gold">Type B</span> Idea-Communicating Lessons</h4>
+    <p><strong>Modeling → Practicing → Workshopping</strong></p>
+    <ul>
+      <li><strong>Modeling:</strong> Teacher demonstrates skill or product — thinking aloud to show the expert process. Keep it short and targeted.</li>
+      <li><strong>Practicing:</strong> Students practice skills for products/performances: productive conversations, body language, two-sided arguments, combining school and personal info, creating visuals, transitions</li>
+      <li><strong>Workshopping:</strong> Students synthesize all building blocks into products/performances. The classroom is messy and active. Teacher circulates, provides targeted feedback, one-on-one coaching, and guides revision.</li>
+    </ul>
+
+    <h3>Developing Language in Every Lesson</h3>
+    <ul>
+      <li>Address language as need arises, not through pre-teaching vocabulary lists</li>
+      <li>The #1 way to develop language: motivated, purposeful use in authentic contexts</li>
+      <li>Model language <em>clarity</em> (not correctness) — help students communicate as clearly as possible</li>
+      <li>Allow translanguaging — using home languages is a strength</li>
+      <li>Teach language features that matter for communication: organization, clarity, transitions, evidence-linking language</li>
+    </ul>
+
+    <h3>Fostering Growth in Every Lesson</h3>
+    <ul>
+      <li>Foster <strong>self-perception</strong> through specific, authentic encouraging feedback</li>
+      <li>Foster <strong>perseverance</strong> by framing mistakes as learning opportunities</li>
+      <li>Foster <strong>social skills</strong> through rich collaboration</li>
+      <li>Foster <strong>character traits</strong> by explicitly discussing them in context</li>
+      <li>Foster <strong>multilingual/multicultural identities</strong> by valuing home language use and cultural examples</li>
+    </ul>
+
+    <div class="callout">
+      <p><strong>Idea Statement:</strong> <em>Every student needs to own their learning in this messy, "no way can one size fit all" instructional space.</em></p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- CHAPTER 6 -->
+  <section class="chapter" id="ch6">
+    <div class="chapter-label">Chapter 6</div>
+    <h2>The System</h2>
+
+    <p><strong>Core Argument:</strong> Classroom-level changes will "fizzle and fade" without systemwide change. Five high-leverage dimensions of a school system must all be aligned toward pedagogical justice.</p>
+
+    <h3>1. Culture</h3>
+    <p>The central and hardest-to-change dimension — shared beliefs, values, behaviors, and expectations of a school community.</p>
+    <ul>
+      <li><strong>Expectations:</strong> All students are capable of complex idea-building; teachers trust students to take on more responsibility</li>
+      <li><strong>Communication:</strong> Home languages and multilingual communication are valued; transparent communication with families</li>
+      <li><strong>Values and Beliefs:</strong> Idea-building and growth are more important than test scores; uniqueness is an asset</li>
+      <li><strong>Behaviors and Routines:</strong> Students help each other build ideas; teachers listen and adjust; enough time for authentic collaboration</li>
+    </ul>
+
+    <div class="callout callout-teal">
+      <p><strong>Pedagogical Rights of Students:</strong> Students have the right to be engaged in learning, learn useful concepts and skills, grow in every lesson, choose how they show learning, redo/revise their work, develop all their gifts and interests, be heard and valued, be taught by creative teachers, build unique and valuable ideas, learn by talking with peers, and learn from mistakes.</p>
+    </div>
+
+    <h3>2. Policies and Programs</h3>
+    <ul>
+      <li><strong>Tracking and placement</strong> — Avoid isolating multilingual students in low-level or English-only classes</li>
+      <li><strong>Dual language programs</strong> — Evaluate whether they are true bilingual programs or just "ELA support"</li>
+      <li><strong>Assessment policies</strong> — Move away from test scores as the primary evidence of learning</li>
+      <li><strong>Grading policies</strong> — Support revision, multiple attempts, and idea-quality over correctness</li>
+    </ul>
+    <p><strong>Educating Newcomers:</strong> Avoid decontextualized vocabulary and grammar drills. Newcomers thrive in idea-building classes where collaboration, visual supports, and home language use are valued.</p>
+
+    <h3>3. Professional Development</h3>
+    <p><strong>Warning signs of ineffective PD:</strong> lots of checkboxes and scripted strategies, focus on covering standards rather than building ideas, "silver bullet" solutions, measured by test score improvements, written by people who haven't spent time in real classrooms with multilingual students.</p>
+    <p><strong>Effective PD structures:</strong></p>
+    <ul>
+      <li><strong>PLCs:</strong> Collaborative inquiry cycles focused on idea-building, communication, and equity — not test scores</li>
+      <li><strong>Instructional Coaching:</strong> Individualized coaching with inquiry cycles, classroom observations, co-planning, co-teaching, and analyzing student work for idea quality</li>
+      <li><strong>PD Piloting:</strong> Start with willing teachers, gather rich evidence, scale gradually, build a shared culture of evidence and growth</li>
+    </ul>
+
+    <h3>4. Quantity, Quality, and Use of Evidence</h3>
+    <p>Shift from test scores as primary evidence to richer, multi-dimensional evidence: student writing (idea quality, not grammar), paired student talk, products and performances, idea visuals, student interviews and oral defenses, teacher observation notes and videos, and student self-assessments.</p>
+
+    <h3>5. Pedagogical Vigilance</h3>
+    <p>The system must actively watch for and resist the pull back toward accumulation:</p>
+    <ul>
+      <li>Watch for PD that promotes accumulation in disguise</li>
+      <li>Be wary of meta-research that reduces complex learning to a single effect size</li>
+      <li>Watch for curriculums that focus on covering rather than building</li>
+      <li>Be wary of too much teacher talk without student response time</li>
+      <li>Name and address pedagogical injustices when they appear systemwide</li>
+    </ul>
+
+    <h3>Closing Important Gaps</h3>
+    <p>Key equity gaps schools must work to close:</p>
+    <ul>
+      <li><strong>Agency gap</strong> — how empowered students feel now vs. how empowered they should be</li>
+      <li><strong>Belonging gap</strong> — how welcomed students feel vs. how welcomed they should feel</li>
+      <li><strong>Engagement gap</strong> — how engaged students are vs. how engaged they should be</li>
+      <li><strong>Relationship gap</strong> — strength of students' relationships vs. the quality they should feel</li>
+      <li><strong>Authentic assessment gap</strong> — what is currently assessed vs. what students actually learned</li>
+      <li><strong>Creativity gap</strong> — how much creativity is encouraged vs. what should be</li>
+      <li><strong>Identity gap</strong> — how multilingual/multicultural identities are valued now vs. how they should be</li>
+    </ul>
+
+    <div class="callout callout-terra">
+      <p><strong>The Call to Action:</strong> The current teach-to-the-test education is doing serious damage to the learning and growth of multilingual students — and many other students as well. We need to start now. The Idea-Building Approach does NOT require abandoning standards, tests, or grades, but it requires shifting priorities so that idea-building, communication, growth, and relationships are always at the center.</p>
+    </div>
+  </section>
+
+
+  <hr class="divider">
+
+  <!-- VOCAB TABLE -->
+  <section class="chapter" id="vocab">
+    <div class="chapter-label">Quick Reference</div>
+    <h2>Key Terms to Know</h2>
+
+    <table class="vocab-table">
+      <thead>
+        <tr><th>Term</th><th>Meaning</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Accumulation-based learning</td><td>The dominant model; students memorize disconnected facts and skills to be tested</td></tr>
+        <tr><td>Idea-Building Approach</td><td>The alternative; students construct, argue for, and communicate lasting ideas</td></tr>
+        <tr><td>Pedagogical Justice</td><td>The right of all students to an education that develops their full potential</td></tr>
+        <tr><td>Big-Idea Statement</td><td>A lasting concept or claim students build toward throughout a unit (e.g., <em>"We have rights and responsibilities to others."</em>)</td></tr>
+        <tr><td>Building Blocks</td><td>Content knowledge, skills, language, and personal/cultural knowledge students need to build the idea</td></tr>
+        <tr><td>Information Gap</td><td>When one student has information another needs; creates authentic communicative purpose</td></tr>
+        <tr><td>Translanguaging</td><td>Using students' full linguistic repertoire (all their languages) as an asset in learning</td></tr>
+        <tr><td>Intrigue</td><td>A state of motivated curiosity toward an unresolved question, problem, or unknown</td></tr>
+        <tr><td>Workshopping</td><td>The "messy" phase of idea-communicating lessons where students synthesize all building blocks into products/performances</td></tr>
+        <tr><td>Formative Assessment</td><td>Ongoing observation and feedback that helps students build and improve ideas, not just grades</td></tr>
+        <tr><td>Pedagogical Vigilance</td><td>Actively monitoring and resisting the pull back toward accumulation-based practices</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p><em>Zwiers, J. (2024). Overhauling Learning for Multilingual Students: An Approach for Achieving Pedagogical Justice. Corwin.</em></p>
+  <p style="margin-top:0.5rem;">Prepared by Matt Sylvester</p>
+</footer>
+
+<script>
+// Scroll progress bar
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  document.getElementById('progressBar').style.width = progress + '%';
+});
+
+// Nav toggle
+const navToggle = document.getElementById('navToggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+const sidebarClose = document.getElementById('sidebarClose');
+
+function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.add('visible'); }
+function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('visible'); }
+
+navToggle.addEventListener('click', openSidebar);
+sidebarOverlay.addEventListener('click', closeSidebar);
+sidebarClose.addEventListener('click', closeSidebar);
+sidebar.querySelectorAll('a').forEach(link => link.addEventListener('click', closeSidebar));
+
+// Show nav toggle after scrolling past hero
+const hero = document.querySelector('.hero');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => { navToggle.classList.toggle('hidden', entry.isIntersecting); });
+}, { threshold: 0.1 });
+observer.observe(hero);
+
+// Animate sections on scroll
+const sections = document.querySelectorAll('.chapter');
+const sectionObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.05 });
+
+sections.forEach(section => {
+  section.style.opacity = '0';
+  section.style.transform = 'translateY(30px)';
+  section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  sectionObserver.observe(section);
+});
+</script>
+
+</body>
+</html>

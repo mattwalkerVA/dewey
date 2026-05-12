@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chunked Source Reading Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #fff; padding: 30px 20px; color: #222; }
+  .screen-only { text-align: center; margin-bottom: 20px; }
+  .screen-only h1 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .screen-only p { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .print-btn { padding: 8px 24px; background: #1a1a2e; color: #fff; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .page { max-width: 720px; margin: 0 auto; }
+  .title { text-align: center; font-size: 17px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 16px; }
+  .meta-line { display: flex; gap: 24px; margin-bottom: 14px; justify-content: center; }
+  .meta-field { font-size: 11px; font-weight: 600; color: #555; }
+  .meta-blank { display: inline-block; width: 200px; border-bottom: 1px solid #999; margin-left: 5px; }
+  .chunk { border: 2px solid #333; margin-bottom: 12px; }
+  .chunk-head { background: #1a1a2e; color: #fff; padding: 7px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; display: flex; justify-content: space-between; }
+  .chunk-num { color: #d4a04a; }
+  .chunk-text { padding: 10px 14px; background: #faf8f4; font-size: 12px; line-height: 1.7; min-height: 60px; border-bottom: 2px solid #333; }
+  .chunk-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .chunk-cell { padding: 9px 12px; font-size: 11px; }
+  .chunk-cell.l { border-right: 1px solid #333; }
+  .label { font-size: 9px; font-weight: 800; color: #666; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .lines { background-image: linear-gradient(to bottom, transparent 18px, #ccc 18px, #ccc 19px, transparent 19px); background-size: 100% 19px; min-height: 60px; }
+  .stop { background: #c45d3e; color: #fff; padding: 6px 10px; font-size: 10px; font-weight: 700; font-style: italic; text-align: center; letter-spacing: 0.5px; }
+  @media print { body { padding: 0.3in; } .screen-only { display: none; } }
+  @page { margin: 0.35in; size: portrait; }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <h1>Chunked Source Reading Guide</h1>
+  <p>Paragraph by paragraph &mdash; with stop-and-talk built in</p>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="page">
+  <div class="title">Chunked Source Reading Guide</div>
+  <div class="sub">Read &mdash; stop &mdash; talk &mdash; check &mdash; continue. Plan the chunks before you teach.</div>
+  <div class="meta-line">
+    <div class="meta-field">Source: <span class="meta-blank"></span></div>
+    <div class="meta-field">Date: <span class="meta-blank"></span></div>
+  </div>
+
+  <div class="chunk">
+    <div class="chunk-head"><span>Chunk <span class="chunk-num">01</span></span><span>Paste or write the text below</span></div>
+    <div class="chunk-text"></div>
+    <div class="stop">&#9646;&#9646;&nbsp;&nbsp;STOP &middot; TURN TO YOUR PARTNER&nbsp;&nbsp;&#9646;&#9646;</div>
+    <div class="chunk-grid">
+      <div class="chunk-cell l"><div class="label">Talk question</div><div class="lines"></div></div>
+      <div class="chunk-cell"><div class="label">My answer</div><div class="lines"></div></div>
+    </div>
+  </div>
+
+  <div class="chunk">
+    <div class="chunk-head"><span>Chunk <span class="chunk-num">02</span></span><span>Paste or write the text below</span></div>
+    <div class="chunk-text"></div>
+    <div class="stop">&#9646;&#9646;&nbsp;&nbsp;STOP &middot; TURN TO YOUR PARTNER&nbsp;&nbsp;&#9646;&#9646;</div>
+    <div class="chunk-grid">
+      <div class="chunk-cell l"><div class="label">Talk question</div><div class="lines"></div></div>
+      <div class="chunk-cell"><div class="label">My answer</div><div class="lines"></div></div>
+    </div>
+  </div>
+
+  <div class="chunk">
+    <div class="chunk-head"><span>Chunk <span class="chunk-num">03</span></span><span>Paste or write the text below</span></div>
+    <div class="chunk-text"></div>
+    <div class="stop">&#9646;&#9646;&nbsp;&nbsp;STOP &middot; TURN TO YOUR PARTNER&nbsp;&nbsp;&#9646;&#9646;</div>
+    <div class="chunk-grid">
+      <div class="chunk-cell l"><div class="label">Talk question</div><div class="lines"></div></div>
+      <div class="chunk-cell"><div class="label">My answer</div><div class="lines"></div></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
